@@ -12,30 +12,15 @@
         <input type="text" id="function">
         <p>Enter your function above</p>
         
-        <script>
-            function get_function(){
-                var txt = document.getElementById("function").value;
-                document.getElementById("text_input").innerHTML = txt;
-            }
-        </script>
-        
-        <button onclick="get_function()">Click Here To Graph</button>
-        <p id = "text_input"></p>
+    
+
         
         
         
         
         <canvas width="500" height="500" id="myCanvas" style="border:1px solid #000000;"></canvas>
         
-        <script>
-            
-            var c = document.getElementById("myCanvas");
-            var ctx = c.getContext("2d");
-            ctx.moveTo(0, 0);
-            ctx.lineTo(200, 100);
-            ctx.stroke();
-            
-        </script>
+        <script src = "scripts/main.js"> </script>
         
         
         
