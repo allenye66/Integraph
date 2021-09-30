@@ -39,11 +39,13 @@ function draw_grid(){
 function draw_bold(){
  //vertical bold lines
     for(var k = 0; k < canvas.width; k += canvas.width/10){
+        
         c.moveTo(k, 0);
         c.lineTo(k, canvas.height);
         c.lineWidth = 1;
         c.strokeStyle = "#c0c0c0"
         c.stroke(); 
+        
     }
     
     //horizontal bold lines
@@ -53,6 +55,7 @@ function draw_bold(){
         c.strokeStyle = "#c0c0c0"
         c.lineWidth = 1;
         c.stroke();
+        
  
         
     }
@@ -70,7 +73,26 @@ function draw_x_axis(){
     c.beginPath();
     
     
-    //add numbers
+    //add numbers 8 pixels below
+    c.font = "12px Arial";
+    var factor = 2;
+    var tick_values = [] //values depending on the zoom level
+    for(var i = (canvas.width/(canvas.width/10))/2*-1; i < (canvas.width/(canvas.width/10))/2+1; i += 1 ){
+        console.log(i);
+        tick_values.push(i*2)
+
+    }
+    
+    var index = 0;
+    for(var l = 0; l < canvas.width+canvas.width/10; l += canvas.width/10 ){
+        c.fillText(tick_values[index], l-8, canvas.height/2+12);
+        index += 1
+    }
+    
+    
+    c.beginPath();
+    
+    
 }
 
 function draw_y_axis(){
@@ -82,13 +104,11 @@ function draw_y_axis(){
     c.stroke();
     
     
-    c.font = "12px Arial";
-    c.fillText(1, canvas.width/2 + 18, canvas.height/2 + 15);
-    
-    c.beginPath();
     
     
-    //add numbers
+
+    
+    //add numbers 8 pixels below
     //for(var i = 0; i <= canvas.width; i += canvas.height/10){
         
         
