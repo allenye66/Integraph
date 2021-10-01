@@ -8,11 +8,25 @@ expr = 'x^2',
 scope  = {x: 0}, 
 tree = math.parse(expr, scope);
 
-draw_grid();
-draw_bold();
-drawCurve();
+draw_x_axis(2);
 
+drawCurve(2);
 get_input();
+
+
+var scale = 2;
+
+document.getElementById("plus").addEventListener("click", function() {
+    
+        
+        scale += 1;
+        drawCurve(scale);
+            
+
+
+
+}, false);
+
 
 
 function draw_grid(){
@@ -63,8 +77,9 @@ function draw_bold(){
 }
 
 
-function draw_x_axis(){
+function draw_x_axis(factor){
     
+    console.log("the factor of x-axis:", factor) 
     c.moveTo(0, canvas.height/2)
     c.lineTo(canvas.width, canvas.height/2);
     c.strokeStyle = "black"
@@ -75,7 +90,7 @@ function draw_x_axis(){
     
     //add numbers 8 pixels below
     c.font = "12px Arial";
-    var factor = 2;
+    //var factor = 2;
     var tick_values = [] //values depending on the zoom level
     for(var i = (canvas.width/(canvas.width/10))/2*-1; i < (canvas.width/(canvas.width/10))/2+1; i += 1 ){
         tick_values.push(i*factor)
@@ -94,7 +109,7 @@ function draw_x_axis(){
     
 }
 
-function draw_y_axis(){
+function draw_y_axis(factor){
     
     c.moveTo(canvas.width/2, 0);
     c.lineTo(canvas.width/2, canvas.height);
@@ -104,7 +119,6 @@ function draw_y_axis(){
     
     
     c.font = "12px Arial";
-    var factor = 2;
     var tick_values = [] //values depending on the zoom level
     for(var i = (canvas.height/(canvas.height/10))/2*-1; i < (canvas.height/(canvas.height/10))/2+1; i += 1 ){
         tick_values.push(i*factor)
@@ -113,6 +127,8 @@ function draw_y_axis(){
     
     var index = 0;
     for(var l = 0; l < canvas.height+canvas.height/10; l += canvas.height/10 ){
+        
+        //skip the y-axis zero
         if( tick_values[index] != 0){
             c.fillText(tick_values[index], canvas.width/2+4, l+3);
         }
@@ -137,11 +153,10 @@ function draw_y_axis(){
 function draw_background(){
     draw_grid();
     draw_bold();
-    draw_x_axis();
-    draw_y_axis();
+
 }
 
-function drawCurve() {
+function drawCurve(scale) {
     
     
     var n, xMax, xMin, yMax, yMin, xPixel, yPixel, mathX, mathY, percentX, percentY;
@@ -152,7 +167,8 @@ function drawCurve() {
     
     
     draw_background();
-    
+    draw_x_axis(scale);
+    draw_y_axis(scale);
     
     //number of points
     n = 1000
