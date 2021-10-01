@@ -78,8 +78,7 @@ function draw_x_axis(){
     var factor = 2;
     var tick_values = [] //values depending on the zoom level
     for(var i = (canvas.width/(canvas.width/10))/2*-1; i < (canvas.width/(canvas.width/10))/2+1; i += 1 ){
-        console.log(i);
-        tick_values.push(i*2)
+        tick_values.push(i*factor)
 
     }
     
@@ -102,6 +101,23 @@ function draw_y_axis(){
     c.strokeStyle = "black"
     c.lineWidth = 3; 
     c.stroke();
+    
+    
+    c.font = "12px Arial";
+    var factor = 2;
+    var tick_values = [] //values depending on the zoom level
+    for(var i = (canvas.height/(canvas.height/10))/2*-1; i < (canvas.height/(canvas.height/10))/2+1; i += 1 ){
+        tick_values.push(i*factor)
+
+    }
+    
+    var index = 0;
+    for(var l = 0; l < canvas.height+canvas.height/10; l += canvas.height/10 ){
+        if( tick_values[index] != 0){
+            c.fillText(tick_values[index], canvas.width/2+4, l+3);
+        }
+        index += 1
+    }
     
     
     
