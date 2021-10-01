@@ -8,23 +8,26 @@ expr = 'x^2',
 scope  = {x: 0}, 
 tree = math.parse(expr, scope);
 
-draw_x_axis(2);
 
-drawCurve(2);
+
+
+
+var scale_values = [0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 4, 5, 10, 20, 50, 100, 200]
+var scale_index = Math.floor(scale_values.length/2);
+
+
+drawCurve(scale_values[scale_index]);
 get_input();
 
+document.getElementById("minus").addEventListener("click", function() {
+        scale_index += 1;
+        drawCurve(scale_values[scale_index]);
+}, false);
 
-var scale = 2;
 
 document.getElementById("plus").addEventListener("click", function() {
-    
-        
-        scale += 1;
-        drawCurve(scale);
-            
-
-
-
+        scale_index -= 1;
+        drawCurve(scale_values[scale_index]);
 }, false);
 
 
@@ -76,10 +79,12 @@ function draw_bold(){
     c.beginPath();
 }
 
+function toFixedIfNecessary( value, dp ){
+  return +parseFloat(value).toFixed( dp );
+}
 
 function draw_x_axis(factor){
     
-    console.log("the factor of x-axis:", factor) 
     c.moveTo(0, canvas.height/2)
     c.lineTo(canvas.width, canvas.height/2);
     c.strokeStyle = "black"
@@ -92,8 +97,10 @@ function draw_x_axis(factor){
     c.font = "12px Arial";
     //var factor = 2;
     var tick_values = [] //values depending on the zoom level
+    
+    //how many bold lines there are. each tick value will correspond to a bolded line
     for(var i = (canvas.width/(canvas.width/10))/2*-1; i < (canvas.width/(canvas.width/10))/2+1; i += 1 ){
-        tick_values.push(i*factor)
+        tick_values.push(toFixedIfNecessary(i*factor, 3))
 
     }
     
@@ -121,7 +128,7 @@ function draw_y_axis(factor){
     c.font = "12px Arial";
     var tick_values = [] //values depending on the zoom level
     for(var i = (canvas.height/(canvas.height/10))/2*-1; i < (canvas.height/(canvas.height/10))/2+1; i += 1 ){
-        tick_values.push(i*factor)
+        tick_values.push(toFixedIfNecessary(i*factor, 3))
 
     }
     
@@ -133,29 +140,21 @@ function draw_y_axis(factor){
             c.fillText(tick_values[index], canvas.width/2+4, l+3);
         }
         index += 1
-    }
-    
-    
-    
-    
-
-    
-    //add numbers 8 pixels below
-    //for(var i = 0; i <= canvas.width; i += canvas.height/10){
-        
-        
-    //}
-    
+    }    
     
 }
 
 
-function draw_background(){
+function draw_background(scale){
     draw_grid();
     draw_bold();
+    draw_x_axis(scale);
+    draw_y_axis(scale);
 
 }
 
+
+// ADJUST THE WINDOW TO THE SCALE
 function drawCurve(scale) {
     
     
@@ -164,11 +163,7 @@ function drawCurve(scale) {
     
     c.clearRect(0, 0, canvas.width, canvas.height);
     
-    
-    
-    draw_background();
-    draw_x_axis(scale);
-    draw_y_axis(scale);
+    draw_background(scale);
     
     //number of points
     n = 1000
@@ -217,8 +212,6 @@ function drawCurve(scale) {
     c.strokeStyle = "red"
     c.lineWidth = 3;
     c.stroke();
-
-    
   
 }
 function evaluate(mathX){
@@ -237,5 +230,3 @@ function get_input(){
     });
 }
     
-
-
