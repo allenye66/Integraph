@@ -9,9 +9,6 @@ scope  = {x: 0},
 tree = math.parse(expr, scope);
 
 
-
-
-
 var scale_values = [0.005,0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100, 200]
 var scale_index = Math.floor(scale_values.length/2);
 
@@ -172,8 +169,16 @@ function drawCurve(scale) {
     xMin = -10,
     yMax = 10,
     yMin = -10;
-
-
+    
+    
+    var starting_scale_reciprocal = 0.5;
+    xMax = xMax * scale*starting_scale_reciprocal; 
+    xMin = xMin * scale*starting_scale_reciprocal;
+    
+    yMin = yMin * scale*starting_scale_reciprocal;
+    yMax = yMax * scale*starting_scale_reciprocal;
+    
+    
     c.beginPath();
     
     for(var i = 0; i < n; i ++){

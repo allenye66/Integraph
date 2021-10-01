@@ -1,0 +1,19 @@
+#wrapper {
+    position: relative;
+    width: 1150px;
+    border: 1px solid #9C9898;
+    height: 900px;
+}
+    
+#buttonWrapper {
+    position: absolute;
+    width: 30px;
+    top: 10px;
+    right: 10px;
+}
+
+input[type="button"] {
+padding: 5px;
+width: 30px;
+margin: 0px 0px 2px 0px;
+}

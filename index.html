@@ -1,50 +1,26 @@
 <!DOCTYPE html>
 <html>
 	<head>
+        <link rel="stylesheet" href="css/style.css">
+        
         <title> Integraph</title>
             <script src = "https://cdnjs.cloudflare.com/ajax/libs/mathjs/0.15.0/math.min.js" ></script>
             <script src = "https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.2/jquery.min.js" ></script>
     </head>
     
     
-    
 
 	<body>
-        
-        
-        <style>
-            #buttonWrapper {
-              position: absolute;
-              width: 30px;
-              top: 2px;
-              right: -570px;
-            }
-            
-            #wrapper {
-              position: relative;
-              width: 578px;
-              height: 200px;
-            }
-            input[type="button"] {
-              padding: 5px;
-              width: 30px;
-              margin: 0px 0px 2px 0px;
-            }
-        </style>
-        
-        
-        
-        
-        
+    
         <h1> Easy Integration </h1>
         <input type="text" id="function">
         <p>Enter your function above</p>
         
         
         <div id = "wrapper">
-        
-            <canvas width="1150" height="900" id="myCanvas" style="border:1px solid #000000;"></canvas>
 
+            <canvas width="1150" height="900" id="myCanvas" style="border:1px solid #000000;"></canvas>
+            
             <div id = "buttonWrapper">
                 <input type="button" id="minus" value="-">
                 <input type="button" id="plus" value="+">
