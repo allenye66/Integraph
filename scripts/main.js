@@ -12,7 +12,7 @@ tree = math.parse(expr, scope);
 
 
 
-var scale_values = [0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 4, 5, 10, 20, 50, 100, 200]
+var scale_values = [0.005,0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100, 200]
 var scale_index = Math.floor(scale_values.length/2);
 
 
