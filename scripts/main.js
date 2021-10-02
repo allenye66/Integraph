@@ -1,35 +1,42 @@
-var canvas = document.getElementById("myCanvas"), c = canvas.getContext('2d');
 
 
 
-//the initial website starts with a graph of x^2
-math = mathjs(),
-expr = 'x^2',
-scope  = {x: 0}, 
-tree = math.parse(expr, scope);
+function main(){
+    var canvas = document.getElementById("myCanvas"), c = canvas.getContext('2d');
+
+    math = mathjs(),
+    expr = 'x^2',
+    scope  = {x: 0}, 
+    tree = math.parse(expr, scope);
 
 
-var scale_values = [0.005,0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100, 200]
-var scale_index = Math.floor(scale_values.length/2);
+    var scale_values = [0.005,0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100, 200]
+    var scale_index = Math.floor(scale_values.length/2);
 
 
-drawCurve(scale_values[scale_index]);
-get_input();
+    drawCurve(canvas, c, tree, scope, scale_values[scale_index], "red");
 
-document.getElementById("minus").addEventListener("click", function() {
-        scale_index += 1;
-        drawCurve(scale_values[scale_index]);
-}, false);
+    get_input();
 
 
-document.getElementById("plus").addEventListener("click", function() {
-        scale_index -= 1;
-        drawCurve(scale_values[scale_index]);
-}, false);
+    document.getElementById("minus").addEventListener("click", function() {
+            scale_index += 1;
+            drawCurve(canvas, c, tree, scope, scale_values[scale_index], "blue");
+
+    }, false);
 
 
+    document.getElementById("plus").addEventListener("click", function() {
+            scale_index -= 1;
+            drawCurve(canvas, c, tree, scope, scale_values[scale_index], "red");
+ 
+    }, false);
 
-function draw_grid(){
+}
+
+main()
+
+function draw_grid(canvas, c){
 
     //vertical lines
     for(var i = 0; i < canvas.width; i += canvas.width/50){
@@ -50,7 +57,7 @@ function draw_grid(){
     c.beginPath();
 }
 
-function draw_bold(){
+function draw_bold(canvas, c){
  //vertical bold lines
     for(var k = 0; k < canvas.width; k += canvas.width/10){
         
@@ -80,7 +87,7 @@ function toFixedIfNecessary( value, dp ){
   return +parseFloat(value).toFixed( dp );
 }
 
-function draw_x_axis(factor){
+function draw_x_axis(canvas, c, factor){
     
     c.moveTo(0, canvas.height/2)
     c.lineTo(canvas.width, canvas.height/2);
@@ -113,7 +120,7 @@ function draw_x_axis(factor){
     
 }
 
-function draw_y_axis(factor){
+function draw_y_axis(canvas, c, factor){
     
     c.moveTo(canvas.width/2, 0);
     c.lineTo(canvas.width/2, canvas.height);
@@ -142,25 +149,23 @@ function draw_y_axis(factor){
 }
 
 
-function draw_background(scale){
-    draw_grid();
-    draw_bold();
-    draw_x_axis(scale);
-    draw_y_axis(scale);
+function draw_background(canvas, c, scale){
+    draw_grid(canvas, c);
+    draw_bold(canvas, c);
+    draw_x_axis(canvas, c, scale);
+    draw_y_axis(canvas, c, scale);
 
 }
 
 
 // ADJUST THE WINDOW TO THE SCALE
-function drawCurve(scale) {
-    
+function drawCurve(canvas, c, function_tree, function_scope, scale, color) {
     
     var n, xMax, xMin, yMax, yMin, xPixel, yPixel, mathX, mathY, percentX, percentY;
     
-    
     c.clearRect(0, 0, canvas.width, canvas.height);
     
-    draw_background(scale);
+    draw_background(canvas, c, scale);
     
     //number of points
     n = 1000
@@ -190,7 +195,7 @@ function drawCurve(scale) {
         mathX = percentX * (xMax - xMin) + xMin;
         //generates n values between xMax and xMin
         
-        mathY = evaluate(mathX);
+        mathY = evaluate(function_tree, function_scope, mathX);
         //mathY = Math.sin(mathX);
         
         
@@ -214,24 +219,27 @@ function drawCurve(scale) {
         c.lineTo(xPixel , yPixel);
 
     }
-    c.strokeStyle = "red"
+    c.strokeStyle = color
     c.lineWidth = 3;
     c.stroke();
   
 }
-function evaluate(mathX){
-    scope.x = mathX;
+function evaluate(tree, s, mathX){
+    s.x = mathX;
     return tree.eval(); 
 }
 
 
 function get_input(){
-    var input = $('#function');
+    var input = $('#function1');
     input.val(expr);
     input.keyup(function (event){
         expr = input.val();
-        tree = math.parse(expr, scope)
-        drawCurve();
+        tree1 = math.parse(expr, scope)
+        drawCurve(scope, 2, "red");
     });
-}
     
+
+    
+}
+
