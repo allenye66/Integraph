@@ -12,11 +12,15 @@ function main(){
 
     var scale_values = [0.005,0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100, 200]
     var scale_index = Math.floor(scale_values.length/2);
+   
+    //draws initial curve
+    //drawCurve(canvas, c, tree, scope, scale_values[scale_index], "red");
 
-
-    drawCurve(canvas, c, tree, scope, scale_values[scale_index], "red");
-
-    get_input();
+    
+    draw_background(canvas, c, scale_values[scale_index]);
+    graph_function_1(canvas, c);
+    graph_function_2(canvas, c);
+    
 
 
     document.getElementById("minus").addEventListener("click", function() {
@@ -34,7 +38,7 @@ function main(){
 
 }
 
-main()
+main();
 
 function draw_grid(canvas, c){
 
@@ -76,9 +80,7 @@ function draw_bold(canvas, c){
         c.strokeStyle = "#c0c0c0"
         c.lineWidth = 1;
         c.stroke();
-        
- 
-        
+
     }
     c.beginPath();
 }
@@ -163,9 +165,9 @@ function drawCurve(canvas, c, function_tree, function_scope, scale, color) {
     
     var n, xMax, xMin, yMax, yMin, xPixel, yPixel, mathX, mathY, percentX, percentY;
     
-    c.clearRect(0, 0, canvas.width, canvas.height);
+    //c.clearRect(0, 0, canvas.width, canvas.height);
     
-    draw_background(canvas, c, scale);
+    
     
     //number of points
     n = 1000
@@ -230,16 +232,28 @@ function evaluate(tree, s, mathX){
 }
 
 
-function get_input(){
+function graph_function_1(canvas, c){
+    
     var input = $('#function1');
     input.val(expr);
     input.keyup(function (event){
         expr = input.val();
-        tree1 = math.parse(expr, scope)
-        drawCurve(scope, 2, "red");
+        tree = math.parse(expr, scope)
+        drawCurve(canvas, c, tree, scope, 2, "red");
     });
-    
-
-    
+  
 }
+
+function graph_function_2(canvas, c){
+
+    var input = $('#function2');
+    input.val(expr);
+    input.keyup(function (event){
+        expr = input.val();
+        tree = math.parse(expr, scope)
+        drawCurve(canvas, c, tree, scope, 2, "green");
+    });
+  
+}
+
 
