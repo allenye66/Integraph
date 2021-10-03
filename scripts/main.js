@@ -1,41 +1,37 @@
 
+var canvas = document.getElementById("myCanvas"), c = canvas.getContext('2d');
+var scale_index = 0
+var scale_values = [0.005,0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100, 200]
+var scale_index = Math.floor(scale_values.length/2);
 
-
-function main(){
-    var canvas = document.getElementById("myCanvas"), c = canvas.getContext('2d');
-
-    var scale_values = [0.005,0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100, 200]
-    var scale_index = Math.floor(scale_values.length/2);
-   
+function main(){    
     
     draw_background(canvas, c, scale_values[scale_index]);
     graph_functions(canvas, c, scale_values, scale_index);
-    zoom(canvas, c, scale_values, scale_index);
+    
 
 }
 
 main();
 
-
-
-
-function zoom(canvas, c, scale_values, scale_index){
-    document.getElementById("minus").addEventListener("click", function() {
+document.getElementById("minus").addEventListener("click", function() {
             scale_index += 1;
             c.clearRect(0, 0, canvas.width, canvas.height);
             draw_background(canvas, c, scale_values[scale_index]);
-            graph_functions(canvas, c, scale_values, scale_index);
+            graph_function_after_zoom(canvas, c, scale_values, scale_index);
+             
+}, false);
 
-    }, false);
-
-    document.getElementById("plus").addEventListener("click", function() {
+document.getElementById("plus").addEventListener("click", function() {
+        
             scale_index -= 1;
             c.clearRect(0, 0, canvas.width, canvas.height);
             draw_background(canvas, c, scale_values[scale_index]);
-            graph_functions(canvas, c, scale_values, scale_index);
-    
-    }, false);
-}
+            graph_function_after_zoom(canvas, c, scale_values, scale_index);
+}, false);
+
+
+
 
 function draw_grid(canvas, c){
 
@@ -282,6 +278,45 @@ function graph_functions(canvas, c, scale_values, scale_index){
                 console.log(e)
         }
     });
+    
+}
+
+
+function graph_function_after_zoom(canvas, c, scale_values, scale_index){
+    math = mathjs();
+    scope = {x:0};
+    var expr1 = document.getElementById('function1').value;
+    var expr2 = document.getElementById('function2').value;
+    
+
+    
+    var input1 = $('#function1');
+    input1.val(expr1);
+    
+    var input2 = $('#function2');
+    input2.val(expr2);
+    
+        
+        
+        
+        
+    expr1 = input1.val();
+    expr2 = input2.val();
+    try{
+
+            tree1 = math.parse(expr1, scope) 
+            tree2 = math.parse(expr2, scope) 
+        }catch(e){
+            console.log("INCOMPLETE FUNCTION:",e)
+        }
+
+        try{
+            drawCurve(canvas, c, tree1, scope, scale_values[scale_index], "red");   
+            drawCurve(canvas, c, tree2, scope, scale_values[scale_index], "green");   
+        }catch(e){
+            console.log(e)
+    }
+    
     
 }
 
