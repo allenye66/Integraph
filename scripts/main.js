@@ -1,14 +1,35 @@
 
 var canvas = document.getElementById("myCanvas"), c = canvas.getContext('2d');
+
 var scale_index = 0
-var scale_values = [0.005,0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100, 200]
-var scale_index = Math.floor(scale_values.length/2);
+
+function give_scale_value(number){
+    var scale_constant_pos = [1,2,5]
+    var scale_constant_neg = [5,2,1]
+    var zeros = Math.floor(number/3);
+    if(number >= 0){
+        
+        return scale_constant_pos[(number)%3]* Math.pow(10, zeros) 
+    }else{
+        
+        return scale_constant_neg[(-number-1)%3] / Math.pow(10, zeros*-1) 
+    }
+    
+}
+
+
+
+
+var NUMBER_GRID_LINES = 50
+var NUMBER_BOLDED_LINES_PER_GRID_LINES = 5;
 
 function main(){    
     
-    draw_background(canvas, c, scale_values[scale_index]);
-    graph_functions(canvas, c, scale_values, scale_index);
+
+    draw_background(canvas, c, give_scale_value(scale_index));
+    graph_functions(canvas, c, give_scale_value(scale_index));
     
+
 
 }
 
@@ -17,8 +38,8 @@ main();
 document.getElementById("minus").addEventListener("click", function() {
             scale_index += 1;
             c.clearRect(0, 0, canvas.width, canvas.height);
-            draw_background(canvas, c, scale_values[scale_index]);
-            graph_function_after_zoom(canvas, c, scale_values, scale_index);
+            draw_background(canvas, c, give_scale_value(scale_index));
+            graph_function_after_zoom(canvas, c, give_scale_value(scale_index) );
              
 }, false);
 
@@ -26,17 +47,18 @@ document.getElementById("plus").addEventListener("click", function() {
         
             scale_index -= 1;
             c.clearRect(0, 0, canvas.width, canvas.height);
-            draw_background(canvas, c, scale_values[scale_index]);
-            graph_function_after_zoom(canvas, c, scale_values, scale_index);
+            draw_background(canvas, c, give_scale_value(scale_index));
+            graph_function_after_zoom(canvas, c, give_scale_value(scale_index) );
 }, false);
 
 
+ 
 
 
 function draw_grid(canvas, c){
 
     //vertical lines
-    for(var i = 0; i < canvas.width; i += canvas.width/50){
+    for(var i = 0; i < canvas.width; i += canvas.width/NUMBER_GRID_LINES){
         c.moveTo(i, 0);
         c.lineTo(i, canvas.height);
         c.strokeStyle = "#f0f0f0"
@@ -44,7 +66,7 @@ function draw_grid(canvas, c){
         c.lineWidth = 1;
     }
     //horizontal lines
-    for(var j = 0; j < canvas.height; j += canvas.height/50){
+    for(var j = 0; j < canvas.height; j += canvas.height/NUMBER_GRID_LINES){
         c.moveTo(0, j)
         c.lineTo(canvas.width, j);
         c.strokeStyle = "#f0f0f0"
@@ -56,7 +78,7 @@ function draw_grid(canvas, c){
 
 function draw_bold(canvas, c){
  //vertical bold lines
-    for(var k = 0; k < canvas.width; k += canvas.width/10){
+    for(var k = 0; k < canvas.width; k += canvas.width/(NUMBER_GRID_LINES/NUMBER_BOLDED_LINES_PER_GRID_LINES)){
         
         c.moveTo(k, 0);
         c.lineTo(k, canvas.height);
@@ -67,7 +89,7 @@ function draw_bold(canvas, c){
     }
     
     //horizontal bold lines
-    for(var l = 0; l < canvas.height; l += canvas.height/10 ){
+    for(var l = 0; l < canvas.height; l += canvas.height/(NUMBER_GRID_LINES/NUMBER_BOLDED_LINES_PER_GRID_LINES) ){
         c.moveTo(0, l)
         c.lineTo(canvas.width, l);
         c.strokeStyle = "#c0c0c0"
@@ -98,13 +120,15 @@ function draw_x_axis(canvas, c, factor){
     var tick_values = [] //values depending on the zoom level
     
     //how many bold lines there are. each tick value will correspond to a bolded line
-    for(var i = (canvas.width/(canvas.width/10))/2*-1; i < (canvas.width/(canvas.width/10))/2+1; i += 1 ){
+    
+    var number_bolded_lines = canvas.width/(NUMBER_GRID_LINES/NUMBER_BOLDED_LINES_PER_GRID_LINES)
+    for(var i = (canvas.width/number_bolded_lines)/2*-1; i < (canvas.width/(number_bolded_lines))/2+1; i += 1 ){
         tick_values.push(toFixedIfNecessary(i*factor, 3))
 
     }
     
     var index = 0;
-    for(var l = 0; l < canvas.width+canvas.width/10; l += canvas.width/10 ){
+    for(var l = 0; l < canvas.width+canvas.width/(NUMBER_GRID_LINES/NUMBER_BOLDED_LINES_PER_GRID_LINES); l += canvas.width/(NUMBER_GRID_LINES/NUMBER_BOLDED_LINES_PER_GRID_LINES) ){
         c.fillText(tick_values[index], l-8, canvas.height/2+12);
         index += 1
     }   
@@ -122,14 +146,16 @@ function draw_y_axis(canvas, c, factor){
     
     
     c.font = "12px Arial";
+    var number_bolded_lines = canvas.height/(NUMBER_GRID_LINES/NUMBER_BOLDED_LINES_PER_GRID_LINES)
+
     var tick_values = [] //values depending on the zoom level
-    for(var i = (canvas.height/(canvas.height/10))/2*-1; i < (canvas.height/(canvas.height/10))/2+1; i += 1 ){
+    for(var i = (canvas.height/number_bolded_lines)/2*-1; i < (canvas.height/number_bolded_lines)/2+1; i += 1 ){
         tick_values.push(toFixedIfNecessary(i*factor, 3))
 
     }
     
     var index = 0;
-    for(var l = 0; l < canvas.height+canvas.height/10; l += canvas.height/10 ){
+    for(var l = 0; l < canvas.height+canvas.height/(NUMBER_GRID_LINES/NUMBER_BOLDED_LINES_PER_GRID_LINES); l += canvas.height/(NUMBER_GRID_LINES/NUMBER_BOLDED_LINES_PER_GRID_LINES) ){
         
         //skip the y-axis zero
         if( tick_values[index] != 0){
@@ -157,19 +183,24 @@ function drawCurve(canvas, c, function_tree, function_scope, scale, color) {
     //number of points
     n = 1000
     
+    
     xMax = 10,
     xMin = -10,
     yMax = 10,
     yMin = -10;
+
     
     
     var starting_scale_reciprocal = 0.5;
-    xMax = xMax * scale*starting_scale_reciprocal; 
-    xMin = xMin * scale*starting_scale_reciprocal;
+    //var starting_scale_reciprocal = NUMBER_BOLDED_LINES_PER_GRID_LINES*(NUMBER_BOLDED_LINES_PER_GRID_LINES)/NUMBER_GRID_LINES
     
-    yMin = yMin * scale*starting_scale_reciprocal;
-    yMax = yMax * scale*starting_scale_reciprocal;
+
     
+    xMax = xMax * scale * starting_scale_reciprocal; 
+    xMin = xMin * scale * starting_scale_reciprocal;
+    
+    yMin = yMin * scale * starting_scale_reciprocal;
+    yMax = yMax * scale * starting_scale_reciprocal; 
     
     c.beginPath();
     
@@ -216,9 +247,7 @@ function evaluate(tree, s, mathX){
     return tree.eval(); 
 }
 
-
-
-function graph_functions(canvas, c, scale_values, scale_index){
+function graph_functions(canvas, c, scale_factor){
     math = mathjs();
     scope = {x:0};
     var expr1 = '';
@@ -236,7 +265,7 @@ function graph_functions(canvas, c, scale_values, scale_index){
         
         c.clearRect(0, 0, canvas.width, canvas.height);
 
-        draw_background(canvas, c, scale_values[scale_index]);
+        draw_background(canvas, c, scale_factor);
         
         
         expr1 = input1.val();
@@ -250,8 +279,8 @@ function graph_functions(canvas, c, scale_values, scale_index){
             }
 
             try{
-                drawCurve(canvas, c, tree1, scope, scale_values[scale_index], "red");   
-                drawCurve(canvas, c, tree2, scope, scale_values[scale_index], "green");   
+                drawCurve(canvas, c, tree1, scope, scale_factor, "red");   
+                drawCurve(canvas, c, tree2, scope, scale_factor, "green");   
             }catch(e){
                 console.log(e)
         }
@@ -259,7 +288,7 @@ function graph_functions(canvas, c, scale_values, scale_index){
     input2.keyup(function (event){
         
         c.clearRect(0, 0, canvas.width, canvas.height);
-        draw_background(canvas, c, scale_values[scale_index]);
+        draw_background(canvas, c, scale_factor);
         
         expr1 = input1.val();
         expr2 = input2.val();
@@ -272,8 +301,8 @@ function graph_functions(canvas, c, scale_values, scale_index){
             }
 
             try{
-                drawCurve(canvas, c, tree1, scope, scale_values[scale_index], "red");   
-                drawCurve(canvas, c, tree2, scope, scale_values[scale_index], "green");   
+                drawCurve(canvas, c, tree1, scope, scale_factor, "red");   
+                drawCurve(canvas, c, tree2, scope, scale_factor, "green");   
             }catch(e){
                 console.log(e)
         }
@@ -282,7 +311,7 @@ function graph_functions(canvas, c, scale_values, scale_index){
 }
 
 
-function graph_function_after_zoom(canvas, c, scale_values, scale_index){
+function graph_function_after_zoom(canvas, c, scale_factor){
     math = mathjs();
     scope = {x:0};
     var expr1 = document.getElementById('function1').value;
@@ -311,8 +340,8 @@ function graph_function_after_zoom(canvas, c, scale_values, scale_index){
         }
 
         try{
-            drawCurve(canvas, c, tree1, scope, scale_values[scale_index], "red");   
-            drawCurve(canvas, c, tree2, scope, scale_values[scale_index], "green");   
+            drawCurve(canvas, c, tree1, scope, scale_factor, "red");   
+            drawCurve(canvas, c, tree2, scope, scale_factor, "green");   
         }catch(e){
             console.log(e)
     }
