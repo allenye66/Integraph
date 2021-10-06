@@ -1,7 +1,10 @@
+*{
+    font-family: Courier New;
+    background-color: white
+}
 #wrapper {
     position: relative;
-    width: 1150px;
-    border: 1px solid #9C9898;
+    width: 1000px;
     height: 900px;
 }
     
@@ -16,4 +19,31 @@ input[type="button"] {
 padding: 5px;
 width: 30px;
 margin: 0px 0px 2px 0px;
+}
+
+
+h1 {
+    text-align: center;
+    font-size: 40px;
+}
+
+
+#function_1 { 
+    display:inline-block;margin-right:10px;
+}
+#text_box_1 { 
+    display:inline-block;margin-right:10px;
+}
+#function_2 { 
+    display:inline-block;margin-right:10px;
+}
+#text_box_2 { 
+    display:inline-block;margin-right:10px;
+}
+
+#function_area{
+    position:absolute; left:1100px; top:200px;
+}
+#directions{
+    width: 340px;
 }

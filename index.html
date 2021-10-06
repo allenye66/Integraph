@@ -11,17 +11,35 @@
     
 
 	<body>
-        <h1> Integraph </h1>
-        <h3> Easy Integration </h3>
-        <input type="text" id="function1">
-        <input type="text" id="function2">
+        <h1> Integraph: Easy Integration </h1>        
+    
         
-        <p>Enter your functions above</p>
+        <div id = "function_area"> 
+            <div id = "function_1"> 
+                <p> Function 1: </p>
+            </div>
+
+            <div id = "text_box_1" >
+                <input type="text" id="function1">
+            </div>
+
+            <br> 
+
+            <div id  = "function_2">
+                <p> Function 2: </p>
+            </div>
+
+            <div id = "text_box_2" >
+                <input type="text" id="function2">
+            </div>
+            
+            <p id = "directions">Enter your functions above. When adding coefficients, write in in the from "3*x" not "3x". </p>
+        </div>
         
         
         <div id = "wrapper">
 
-            <canvas width="1150" height="900" id="myCanvas" style="border:1px solid #000000;"></canvas>
+            <canvas width="1000" height="1000" id="myCanvas" style="border:1px solid #000000;"></canvas>
             
             <div id = "buttonWrapper">
                 <input type="button" id="minus" value="-">

@@ -17,19 +17,13 @@ function give_scale_value(number){
     
 }
 
-
-
-
 var NUMBER_GRID_LINES = 50
 var NUMBER_BOLDED_LINES_PER_GRID_LINES = 5;
 
 function main(){    
     
-
     draw_background(canvas, c, give_scale_value(scale_index));
     graph_functions(canvas, c, give_scale_value(scale_index));
-    
-
 
 }
 
@@ -345,7 +339,28 @@ function graph_function_after_zoom(canvas, c, scale_factor){
         }catch(e){
             console.log(e)
     }
-    
+}
+
+function getMousePos(canvas, evt) {
+    var rect = canvas.getBoundingClientRect();
+    return {
+        x: (evt.clientX - rect.left) / (rect.right - rect.left) * canvas.width,
+        y: (evt.clientY - rect.top) / (rect.bottom - rect.top) * canvas.height
+    };
+}
+
+
+function print_mouse_coord(e) {
+    var pos = getMousePos(canvas, e);
+    var pos_x = toFixedIfNecessary(pos.x, 1);
+    var pos_xy = toFixedIfNecessary(pos.y, 1);
+    console.log(pos_x, pos_y)
+}
+
+window.addEventListener('mousemove', print_mouse_coord, false);
+
+
+function closest_coordinate(canvas, c, scale_factor){
     
 }
 
