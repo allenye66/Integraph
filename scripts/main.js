@@ -145,7 +145,7 @@ function draw_y_axis(canvas, c, factor){
 
     var tick_values = [] //values depending on the zoom level
     for(var i = (canvas.height/number_bolded_lines)/2*-1; i < (canvas.height/number_bolded_lines)/2+1; i += 1 ){
-        tick_values.push(toFixedIfNecessary(i*factor, 3))
+        tick_values.push(-1 * toFixedIfNecessary(i*factor, 3))
 
     }
     
@@ -354,9 +354,7 @@ var y_max = 5
 var y_min = -5
 
 
-
-
-function give_mouse_coord(e) {
+function give_mouse_coord(e, x) {
     var pos = getMousePos(canvas, e);
     
     var pos_x = pos.x
@@ -388,20 +386,19 @@ function give_mouse_coord(e) {
     pos_x /= NUMBER_BOLDED_LINES 
     pos_y /= -1*NUMBER_BOLDED_LINES 
     
-    //pos_x *= scale_index 
-    //pos_y *= scale_index
     
-    
-
+    pos_x = pos_x * give_scale_value(scale_index)
+    pos_y = pos_y * give_scale_value(scale_index)
     
 
     pos_x = toFixedIfNecessary(pos_x, 2)
     pos_y = toFixedIfNecessary(pos_y, 2)
+    
     console.log(pos_x, pos_y)
 }
 
 
-window.addEventListener('click', give_mouse_coord, false);
+window.addEventListener('click', e => give_mouse_coord(e, scale_index), false);
 
 
 closest_coordinate(-5, 5, -5, 5, NUMBER_GRID_LINES, pos_x, pos_y)
