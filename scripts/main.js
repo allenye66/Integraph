@@ -19,6 +19,7 @@ function give_scale_value(number){
 
 var NUMBER_GRID_LINES = 50
 var NUMBER_BOLDED_LINES_PER_GRID_LINES = 5;
+var NUMBER_BOLDED_LINES = NUMBER_GRID_LINES/NUMBER_BOLDED_LINES_PER_GRID_LINES;
 
 function main(){    
     
@@ -72,7 +73,7 @@ function draw_grid(canvas, c){
 
 function draw_bold(canvas, c){
  //vertical bold lines
-    for(var k = 0; k < canvas.width; k += canvas.width/(NUMBER_GRID_LINES/NUMBER_BOLDED_LINES_PER_GRID_LINES)){
+    for(var k = 0; k < canvas.width; k += canvas.width/NUMBER_BOLDED_LINES){
         
         c.moveTo(k, 0);
         c.lineTo(k, canvas.height);
@@ -83,7 +84,7 @@ function draw_bold(canvas, c){
     }
     
     //horizontal bold lines
-    for(var l = 0; l < canvas.height; l += canvas.height/(NUMBER_GRID_LINES/NUMBER_BOLDED_LINES_PER_GRID_LINES) ){
+    for(var l = 0; l < canvas.height; l += canvas.height/NUMBER_BOLDED_LINES ){
         c.moveTo(0, l)
         c.lineTo(canvas.width, l);
         c.strokeStyle = "#c0c0c0"
@@ -115,14 +116,14 @@ function draw_x_axis(canvas, c, factor){
     
     //how many bold lines there are. each tick value will correspond to a bolded line
     
-    var number_bolded_lines = canvas.width/(NUMBER_GRID_LINES/NUMBER_BOLDED_LINES_PER_GRID_LINES)
+    var number_bolded_lines = canvas.width/(NUMBER_BOLDED_LINES)
     for(var i = (canvas.width/number_bolded_lines)/2*-1; i < (canvas.width/(number_bolded_lines))/2+1; i += 1 ){
         tick_values.push(toFixedIfNecessary(i*factor, 3))
 
     }
     
     var index = 0;
-    for(var l = 0; l < canvas.width+canvas.width/(NUMBER_GRID_LINES/NUMBER_BOLDED_LINES_PER_GRID_LINES); l += canvas.width/(NUMBER_GRID_LINES/NUMBER_BOLDED_LINES_PER_GRID_LINES) ){
+    for(var l = 0; l < canvas.width+canvas.width/(NUMBER_BOLDED_LINES); l += canvas.width/(NUMBER_BOLDED_LINES) ){
         c.fillText(tick_values[index], l-8, canvas.height/2+12);
         index += 1
     }   
@@ -140,7 +141,7 @@ function draw_y_axis(canvas, c, factor){
     
     
     c.font = "12px Arial";
-    var number_bolded_lines = canvas.height/(NUMBER_GRID_LINES/NUMBER_BOLDED_LINES_PER_GRID_LINES)
+    var number_bolded_lines = canvas.height/(NUMBER_BOLDED_LINES)
 
     var tick_values = [] //values depending on the zoom level
     for(var i = (canvas.height/number_bolded_lines)/2*-1; i < (canvas.height/number_bolded_lines)/2+1; i += 1 ){
@@ -149,7 +150,7 @@ function draw_y_axis(canvas, c, factor){
     }
     
     var index = 0;
-    for(var l = 0; l < canvas.height+canvas.height/(NUMBER_GRID_LINES/NUMBER_BOLDED_LINES_PER_GRID_LINES); l += canvas.height/(NUMBER_GRID_LINES/NUMBER_BOLDED_LINES_PER_GRID_LINES) ){
+    for(var l = 0; l < canvas.height+canvas.height/NUMBER_BOLDED_LINES; l += canvas.height/NUMBER_BOLDED_LINES ){
         
         //skip the y-axis zero
         if( tick_values[index] != 0){
@@ -186,7 +187,6 @@ function drawCurve(canvas, c, function_tree, function_scope, scale, color) {
     
     
     var starting_scale_reciprocal = 0.5;
-    //var starting_scale_reciprocal = NUMBER_BOLDED_LINES_PER_GRID_LINES*(NUMBER_BOLDED_LINES_PER_GRID_LINES)/NUMBER_GRID_LINES
     
 
     
@@ -348,19 +348,75 @@ function getMousePos(canvas, evt) {
         y: (evt.clientY - rect.top) / (rect.bottom - rect.top) * canvas.height
     };
 }
+var x_max = 5
+var x_min = -5
+var y_max = 5
+var y_min = -5
 
 
-function print_mouse_coord(e) {
+
+
+function give_mouse_coord(e) {
     var pos = getMousePos(canvas, e);
-    var pos_x = toFixedIfNecessary(pos.x, 1);
-    var pos_xy = toFixedIfNecessary(pos.y, 1);
+    
+    var pos_x = pos.x
+    var pos_y = pos.y
+    
+    
+    //no going out of bounds
+    if(pos_x > canvas.width){
+        pos_x = canvas.width
+    }
+    if(pos_y > canvas.height){
+        pos_y = canvas.height
+    }
+    if(pos_x < 0){
+        pos_x = 0
+    }
+    if(pos_y < 0){
+        pos_y = 0
+    }
+    
+    
+    pos_x = pos_x/NUMBER_BOLDED_LINES
+    pos_y = pos_y/NUMBER_BOLDED_LINES
+    
+    
+    pos_x -= NUMBER_GRID_LINES
+    pos_y -= NUMBER_GRID_LINES
+    
+    pos_x /= NUMBER_BOLDED_LINES 
+    pos_y /= -1*NUMBER_BOLDED_LINES 
+    
+    //pos_x *= scale_index 
+    //pos_y *= scale_index
+    
+    
+
+    
+
+    pos_x = toFixedIfNecessary(pos_x, 2)
+    pos_y = toFixedIfNecessary(pos_y, 2)
     console.log(pos_x, pos_y)
 }
 
-window.addEventListener('mousemove', print_mouse_coord, false);
+
+window.addEventListener('click', give_mouse_coord, false);
 
 
-function closest_coordinate(canvas, c, scale_factor){
+closest_coordinate(-5, 5, -5, 5, NUMBER_GRID_LINES, pos_x, pos_y)
+
+function closest_coordinate(pos_x, pos_y, x_min, x_max, y_min, y_max, num_grid_lines){
     
+
+
+    
+    pos_x = pos_x  + (x_max - x_min)
+    pos_y = pos_y + (y_max - y_min)
+    
+    x_scale = (x_max - x_min)/num_grid_lines
+    y_scale = (y_min - y_min)/num_grid_lines
+    
+    console.log(x_scale, y_scale)
 }
 
