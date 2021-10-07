@@ -23,8 +23,9 @@ var NUMBER_BOLDED_LINES = NUMBER_GRID_LINES/NUMBER_BOLDED_LINES_PER_GRID_LINES;
 
 function main(){    
     
-    draw_background(canvas, c, give_scale_value(scale_index));
+    
     graph_functions(canvas, c, give_scale_value(scale_index));
+    draw_background(canvas, c, give_scale_value(scale_index));
 
 }
 
@@ -55,19 +56,18 @@ function draw_grid(canvas, c){
     //vertical lines
     for(var i = 0; i < canvas.width; i += canvas.width/NUMBER_GRID_LINES){
         c.moveTo(i, 0);
-        c.lineTo(i, canvas.height);
-        c.strokeStyle = "#f0f0f0"
-        c.stroke();   
+        c.lineTo(i, canvas.height);           
         c.lineWidth = 1;
     }
     //horizontal lines
     for(var j = 0; j < canvas.height; j += canvas.height/NUMBER_GRID_LINES){
         c.moveTo(0, j)
         c.lineTo(canvas.width, j);
-        c.strokeStyle = "#f0f0f0"
+        
         c.stroke();   
         c.lineWidth = 1;
     }
+
     c.beginPath();
 }
 
@@ -78,7 +78,6 @@ function draw_bold(canvas, c){
         c.moveTo(k, 0);
         c.lineTo(k, canvas.height);
         c.lineWidth = 1;
-        c.strokeStyle = "#c0c0c0"
         c.stroke(); 
         
     }
@@ -87,7 +86,6 @@ function draw_bold(canvas, c){
     for(var l = 0; l < canvas.height; l += canvas.height/NUMBER_BOLDED_LINES ){
         c.moveTo(0, l)
         c.lineTo(canvas.width, l);
-        c.strokeStyle = "#c0c0c0"
         c.lineWidth = 1;
         c.stroke();
 
@@ -103,14 +101,13 @@ function draw_x_axis(canvas, c, factor){
     
     c.moveTo(0, canvas.height/2)
     c.lineTo(canvas.width, canvas.height/2);
-    c.strokeStyle = "black"
+    
     c.lineWidth = 3; 
     c.stroke();
     c.beginPath();
     
     
     //add numbers 8 pixels below
-    c.font = "12px Arial";
     //var factor = 2;
     var tick_values = [] //values depending on the zoom level
     
@@ -135,12 +132,10 @@ function draw_y_axis(canvas, c, factor){
     
     c.moveTo(canvas.width/2, 0);
     c.lineTo(canvas.width/2, canvas.height);
-    c.strokeStyle = "black"
     c.lineWidth = 3; 
     c.stroke();
     
     
-    c.font = "12px Arial";
     var number_bolded_lines = canvas.height/(NUMBER_BOLDED_LINES)
 
     var tick_values = [] //values depending on the zoom level
@@ -163,15 +158,24 @@ function draw_y_axis(canvas, c, factor){
 
 
 function draw_background(canvas, c, scale){
+    c.strokeStyle = "#f0f0f0"
     draw_grid(canvas, c);
+    
+    c.strokeStyle = "#c0c0c0"
     draw_bold(canvas, c);
+    
+    c.strokeStyle = "black"
+    c.font = "12px Courier New";
+
     draw_x_axis(canvas, c, scale);
     draw_y_axis(canvas, c, scale);
 
+    
 }
 
 
 function drawCurve(canvas, c, function_tree, function_scope, scale, color) {
+    
     
     var n, xMax, xMin, yMax, yMin, xPixel, yPixel, mathX, mathY, percentX, percentY;
     
@@ -269,12 +273,14 @@ function graph_functions(canvas, c, scale_factor){
                 tree1 = math.parse(expr1, scope) 
                 tree2 = math.parse(expr2, scope) 
             }catch(e){
-                console.log("INCOMPLETE FUNCTION:",e)
+                console.log("INCOMPLETE FUNCTION:", e)
             }
 
             try{
-                drawCurve(canvas, c, tree1, scope, scale_factor, "red");   
-                drawCurve(canvas, c, tree2, scope, scale_factor, "green");   
+                drawCurve(canvas, c, tree1, scope, scale_factor, "red");  
+                drawCurve(canvas, c, tree2, scope, scale_factor, "green");  
+                
+                
             }catch(e){
                 console.log(e)
         }
@@ -291,12 +297,15 @@ function graph_functions(canvas, c, scale_factor){
                 tree1 = math.parse(expr1, scope) 
                 tree2 = math.parse(expr2, scope) 
             }catch(e){
-                console.log("INCOMPLETE FUNCTION:",e)
+                console.log("INCOMPLETE FUNCTION:", e)
             }
 
             try{
-                drawCurve(canvas, c, tree1, scope, scale_factor, "red");   
-                drawCurve(canvas, c, tree2, scope, scale_factor, "green");   
+                //whichever is drawn last has a gray line
+                drawCurve(canvas, c, tree1, scope, scale_factor, "red");  
+                drawCurve(canvas, c, tree2, scope, scale_factor, "green");  
+                 
+                
             }catch(e){
                 console.log(e)
         }
@@ -348,12 +357,19 @@ function getMousePos(canvas, evt) {
         y: (evt.clientY - rect.top) / (rect.bottom - rect.top) * canvas.height
     };
 }
+
+/*
 var x_max = 5
 var x_min = -5
 var y_max = 5
 var y_min = -5
 
+var center_x
+var center_y
 
+
+//need to implement when the x/y axis is not at the center
+*/
 function give_mouse_coord(e, x) {
     var pos = getMousePos(canvas, e);
     
@@ -400,20 +416,4 @@ function give_mouse_coord(e, x) {
 
 window.addEventListener('click', e => give_mouse_coord(e, scale_index), false);
 
-
-closest_coordinate(-5, 5, -5, 5, NUMBER_GRID_LINES, pos_x, pos_y)
-
-function closest_coordinate(pos_x, pos_y, x_min, x_max, y_min, y_max, num_grid_lines){
-    
-
-
-    
-    pos_x = pos_x  + (x_max - x_min)
-    pos_y = pos_y + (y_max - y_min)
-    
-    x_scale = (x_max - x_min)/num_grid_lines
-    y_scale = (y_min - y_min)/num_grid_lines
-    
-    console.log(x_scale, y_scale)
-}
 
