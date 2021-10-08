@@ -26,6 +26,7 @@ function main(){
     
     graph_functions(canvas, c, give_scale_value(scale_index));
     draw_background(canvas, c, give_scale_value(scale_index));
+    
 
 }
 
@@ -370,13 +371,16 @@ var center_y
 
 //need to implement when the x/y axis is not at the center
 */
-function give_mouse_coord(e, x) {
+function give_mouse_coord(e, x, canvas, c) {
     var pos = getMousePos(canvas, e);
     
     var pos_x = pos.x
     var pos_y = pos.y
     
     
+    
+    floodFill(c, toFixedIfNecessary(pos_x, 0), toFixedIfNecessary(pos_y, 0), 0xFF0000FF);  
+
     //no going out of bounds
     if(pos_x > canvas.width){
         pos_x = canvas.width
@@ -410,15 +414,72 @@ function give_mouse_coord(e, x) {
     pos_x = toFixedIfNecessary(pos_x, 2)
     pos_y = toFixedIfNecessary(pos_y, 2)
     
-    var str = "Your current coordinate: " + pos_x + ", "  + pos_y + ".";
+    
+    var str = "Your current coordinate: (" + pos_x + ", "  + pos_y + ").";
     document.getElementById('coordinate_text').innerHTML = str;
 
-
-
     
-    //floodfill()
+}
+//floodFill(c, 50, 50, 0xFF0000FF);
+
+function getPixel(pixelData, x, y) {
+  if (x < 0 || y < 0 || x >= pixelData.width || y >= pixelData.height) {
+    return -1;  // impossible color
+  } else {
+    return pixelData.data[y * pixelData.width + x];
+  }
+}
+
+async function floodFill(ctx, x, y, fillColor) {
+  // read the pixels in the canvas
+  const imageData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
+  
+  // make a Uint32Array view on the pixels so we can manipulate pixels
+  // one 32bit value at a time instead of as 4 bytes per pixel
+  const pixelData = {
+    width: imageData.width,
+    height: imageData.height,
+    data: new Uint32Array(imageData.data.buffer),
+  };
+  
+  // get the color we're filling
+  const targetColor1 = getPixel(pixelData, 50, 50);
+  const targetColor2 = getPixel(pixelData, 80, 50);
+    const targetColor3 = getPixel(pixelData, 100, 50);
+  // check we are actually filling a different color
+  if (targetColor1 !== fillColor && targetColor2 !== fillColor && targetColor3 !== fillColor ) {
+  
+    const ticksPerUpdate = 100;
+    let tickCount = 0;
+    const pixelsToCheck = [x, y];
+    while (pixelsToCheck.length > 0) {
+      const y = pixelsToCheck.pop();
+      const x = pixelsToCheck.pop();
+      
+      const currentColor = getPixel(pixelData, x, y);
+      if (currentColor === targetColor1 || currentColor === targetColor2 || currentColor === targetColor3) {
+        pixelData.data[y * pixelData.width + x] = fillColor;
+        
+        // put the data back
+        ctx.putImageData(imageData, 0, 0);
+        ++tickCount;
+        if (tickCount % ticksPerUpdate === 0) {
+          await wait();
+        }
+        
+        pixelsToCheck.push(x + 1, y);
+        pixelsToCheck.push(x - 1, y);
+        pixelsToCheck.push(x, y + 1);
+        pixelsToCheck.push(x, y - 1);
+      }
+    }    
+  }
+}
+function wait(delay = 0) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, delay);
+  });
 }
 
 
-
-window.addEventListener('click', e => give_mouse_coord(e, scale_index), false);
+window.addEventListener('click', e => give_mouse_coord(e, scale_index, canvas, c), false);
