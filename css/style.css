@@ -52,3 +52,11 @@ h1 {
 #directions{
     width: 340px;
 }
+
+#coordinate_text {
+    
+    position: absolute;
+    right:330px;
+    top: 460px;
+
+}

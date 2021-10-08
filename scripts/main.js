@@ -410,10 +410,15 @@ function give_mouse_coord(e, x) {
     pos_x = toFixedIfNecessary(pos_x, 2)
     pos_y = toFixedIfNecessary(pos_y, 2)
     
-    console.log(pos_x, pos_y)
+    var str = "Your current coordinate: " + pos_x + ", "  + pos_y + ".";
+    document.getElementById('coordinate_text').innerHTML = str;
+
+
+
+    
+    //floodfill()
 }
 
 
+
 window.addEventListener('click', e => give_mouse_coord(e, scale_index), false);
-
-
