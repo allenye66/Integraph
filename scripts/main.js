@@ -379,7 +379,7 @@ function give_mouse_coord(e, x, canvas, c) {
     
     
     
-    floodFill(c, toFixedIfNecessary(pos_x, 0), toFixedIfNecessary(pos_y, 0), 0xFF0000FF);  
+    floodFill(c, toFixedIfNecessary(pos_x, 0), toFixedIfNecessary(pos_y, 0), 0xFF75E6DA);  
 
     //no going out of bounds
     if(pos_x > canvas.width){
@@ -432,6 +432,9 @@ function getPixel(pixelData, x, y) {
 
 async function floodFill(ctx, x, y, fillColor) {
   // read the pixels in the canvas
+    
+    
+    
   const imageData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
   
   // make a Uint32Array view on the pixels so we can manipulate pixels
@@ -443,11 +446,20 @@ async function floodFill(ctx, x, y, fillColor) {
   };
   
   // get the color we're filling
-  const targetColor1 = getPixel(pixelData, 50, 50);
-  const targetColor2 = getPixel(pixelData, 80, 50);
-    const targetColor3 = getPixel(pixelData, 100, 50);
+    
+    
+    const targetColors = [0, 4293914607, 4290888129, 4277268977, 4294046193, 4293914607, 4290822336, 4277137391, 4290953922, 4274045120];
+    
+    const diff_colors = new Set()
+    for(var i = 1; i < 999; i +=1){
+        diff_colors.add(getPixel(pixelData, i, 50));
+    }
+    console.log("the different colors:", diff_colors)
+
   // check we are actually filling a different color
-  if (targetColor1 !== fillColor && targetColor2 !== fillColor && targetColor3 !== fillColor ) {
+    
+    const bad_colors = new Set()
+  if (!targetColors.includes(fillColor)  ) {
   
     const ticksPerUpdate = 100;
     let tickCount = 0;
@@ -457,7 +469,7 @@ async function floodFill(ctx, x, y, fillColor) {
       const x = pixelsToCheck.pop();
       
       const currentColor = getPixel(pixelData, x, y);
-      if (currentColor === targetColor1 || currentColor === targetColor2 || currentColor === targetColor3) {
+      if (targetColors.includes(currentColor)) {
         pixelData.data[y * pixelData.width + x] = fillColor;
         
         // put the data back
@@ -471,9 +483,13 @@ async function floodFill(ctx, x, y, fillColor) {
         pixelsToCheck.push(x - 1, y);
         pixelsToCheck.push(x, y + 1);
         pixelsToCheck.push(x, y - 1);
+      }else{
+          
+          bad_colors.add( currentColor)
       }
     }    
   }
+    console.log("the bad colors:", bad_colors)
 }
 function wait(delay = 0) {
   return new Promise((resolve) => {
