@@ -429,7 +429,11 @@ function getPixel(pixelData, x, y) {
     return pixelData.data[y * pixelData.width + x];
   }
 }
-
+function highest(){ 
+  return [].slice.call(arguments).sort(function(a,b){ 
+    return b - a; 
+  }); 
+}
 async function floodFill(ctx, x, y, fillColor) {
   // read the pixels in the canvas
     
@@ -447,14 +451,14 @@ async function floodFill(ctx, x, y, fillColor) {
   
   // get the color we're filling
     
+    //cant put: 4285916890
     
-    const targetColors = [0, 4293914607, 4290888129, 4277268977, 4294046193, 4293914607, 4290822336, 4277137391, 4290953922, 4274045120];
+    const targetColors = [0, 4293914607, 4290888129, 4277268977, 4294046193, 4290822336, 4277137391, 4290953922, 4274045120, 4274374085, 4277203184, 4274176706, 4275624152, 4275624152, 4275492595, 4274242499, 4278190080, 4291085508, 4274439878, 4271150291, 4274242546,  4270887159, 4276282098, 4275689969, 4274966257, 4275163633, 4275426801, 4293914607, 4289967091, 4277334770, 4274768843, 4291282887, 4260557554,4260360175, 4227003122, 4291677645, 4290756543, 4276349667, 4226805743, 4225358297, 4025610737, 4286019575, 4225160918, 4288190710, 4279440382, 4279900925, 4290296053, 4274834636, 4025479151, 2146562545, 2163208175];
     
-    const diff_colors = new Set()
-    for(var i = 1; i < 999; i +=1){
-        diff_colors.add(getPixel(pixelData, i, 50));
-    }
-    console.log("the different colors:", diff_colors)
+    //for(var i = 1; i < 999; i +=1){
+    //    console.log(i, getPixel(pixelData, 400, 550));
+    //}
+    
 
   // check we are actually filling a different color
     
@@ -484,12 +488,12 @@ async function floodFill(ctx, x, y, fillColor) {
         pixelsToCheck.push(x, y + 1);
         pixelsToCheck.push(x, y - 1);
       }else{
-          
-          bad_colors.add( currentColor)
+          console.log("bad", currentColor)
+          //bad_colors.add( currentColor)
       }
     }    
   }
-    console.log("the bad colors:", bad_colors)
+    //console.log("the bad colors:", highest(bad_colors));
 }
 function wait(delay = 0) {
   return new Promise((resolve) => {
