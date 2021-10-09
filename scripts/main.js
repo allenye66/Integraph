@@ -378,8 +378,9 @@ function give_mouse_coord(e, x, canvas, c) {
     var pos_y = pos.y
     
     
+    //floodFill(c, toFixedIfNecessary(pos_x, 0), toFixedIfNecessary(pos_y, 0), 0xFF75E6DA); 
     
-    floodFill(c, toFixedIfNecessary(pos_x, 0), toFixedIfNecessary(pos_y, 0), 0xFF75E6DA);  
+    
 
     //no going out of bounds
     if(pos_x > canvas.width){
@@ -414,6 +415,25 @@ function give_mouse_coord(e, x, canvas, c) {
     pos_x = toFixedIfNecessary(pos_x, 2)
     pos_y = toFixedIfNecessary(pos_y, 2)
     
+    var expr1 = document.getElementById('function1').value;
+    var expr2 = document.getElementById('function2').value;
+    var f1_below;
+    var f2_below;
+    f1_below = coord_below(toFixedIfNecessary(pos_x, 3), toFixedIfNecessary(pos_y, 3), expr1)
+    f2_below = coord_below(toFixedIfNecessary(pos_x, 3), toFixedIfNecessary(pos_y, 3), expr2)
+    
+    /*
+    if(f1_below){
+        console.log("the point is below function 1")
+    }else{
+        console.log("the point is above function 1")
+    }
+    if(f2_below){
+        console.log("the point is below function 2")
+    }else{
+        console.log("the point is above function 2")
+    }
+    */
     
     var str = "Your current coordinate: (" + pos_x + ", "  + pos_y + ").";
     document.getElementById('coordinate_text').innerHTML = str;
@@ -488,7 +508,7 @@ async function floodFill(ctx, x, y, fillColor) {
         pixelsToCheck.push(x, y + 1);
         pixelsToCheck.push(x, y - 1);
       }else{
-          console.log("bad", currentColor)
+          //console.log("bad", currentColor)
           //bad_colors.add( currentColor)
       }
     }    
@@ -503,3 +523,31 @@ function wait(delay = 0) {
 
 
 window.addEventListener('click', e => give_mouse_coord(e, scale_index, canvas, c), false);
+
+
+function coord_below(x_pos, y_pos, f){
+    
+    scope = {x:x_pos};
+    
+    function_y = toFixedIfNecessary(math.eval(f, scope), 3)
+    
+    //console.log("the y position of this coordinate on the function is: ", function_y)
+    
+    if(y_pos > function_y){
+        //console.log("this point is above the line")
+        return false
+    }
+    //console.log("this point is below the line")
+    return true
+    
+
+}
+
+
+
+
+//when there is only 1 function and it is bounded by x-axis
+
+
+//when there is two functions 
+//have to calculate intersection points and see if 0 is within them since x-axis is automatic bound

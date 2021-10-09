@@ -55,7 +55,7 @@ h1 {
 
 #coordinate_text {
     
-    position:fixed;
+    position:absolute;
     width = 100px;
     right:330px;
     top: 460px;
