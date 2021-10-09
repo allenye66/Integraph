@@ -371,14 +371,14 @@ var center_y
 
 //need to implement when the x/y axis is not at the center
 */
-function give_mouse_coord(e, x, canvas, c) {
+function on_click(e, x, canvas, c) {
     var pos = getMousePos(canvas, e);
     
     var pos_x = pos.x
     var pos_y = pos.y
     
-    
-    //floodFill(c, toFixedIfNecessary(pos_x, 0), toFixedIfNecessary(pos_y, 0), 0xFF75E6DA); 
+    var floodfill_x = toFixedIfNecessary(pos_x, 0)
+    var floodfill_y = toFixedIfNecessary(pos_y, 0)
     
     
 
@@ -419,8 +419,89 @@ function give_mouse_coord(e, x, canvas, c) {
     var expr2 = document.getElementById('function2').value;
     var f1_below;
     var f2_below;
+    
+    //is the coordinate below the graph?
     f1_below = coord_below(toFixedIfNecessary(pos_x, 3), toFixedIfNecessary(pos_y, 3), expr1)
     f2_below = coord_below(toFixedIfNecessary(pos_x, 3), toFixedIfNecessary(pos_y, 3), expr2)
+    
+    
+    //for when theres no point floodfilling and wasting time
+    var should_floodfill = false;
+    
+    
+    var integral;
+    //if there are no graphs
+    if(expr1.length == 0 && expr2.length == 0){
+        integral = "To calculate an integral, please enter a function."
+    }
+    
+    //only function 1
+    else if(expr1.length != 0 && expr2.length == 0){
+        
+        
+        //if the integral is above the x axis and above the graph
+        if(!f1_below && above_x_axis(pos_y)){
+            integral = "The integral is infinite, coordinate above the graph and x-axis."
+        }
+        //if the integral is below the x axis and below the graph
+        else if(f1_below && !above_x_axis(pos_y)){
+            integral = "The integral is infinite, coordinate below the graph and x-axis."
+        
+        }
+
+        
+        else{
+            should_floodfill = true;
+        }
+        
+        
+    }
+    
+    //only function 2
+    else if(expr1.length == 0 && expr2.length != 0){
+        if(!f2_below && above_x_axis(pos_y)){
+            integral = "The integral is infinite, coordinate above the graph."
+        }
+        else if(f2_below && !above_x_axis(pos_y)){
+            integral = "The integral is infinite, coordinate below the graph and x-axis."
+        
+        }
+        else{
+            should_floodfill = true;}
+        }
+    //two functions 
+    else{
+        
+        //between two functions above 
+        
+        if( (f2_below && !f1_below) || (!f2_below && f1_below)){
+            integral = "has integral between two functions"
+            should_floodfill = true;
+        }
+        
+        else if((!f2_below || !f1_below)  && above_x_axis(pos_y)){
+            integral = "The integral is infinite, the coordinate is above a function."
+        }
+        
+        else if( (f2_below || f1_below) && !above_x_axis(pos_y)){
+            integral = "The integral is infinite, the coordinate is below a function."
+        }
+        
+        else{
+            should_floodfill = true;
+        }
+        
+        
+    }
+       
+       
+    if(should_floodfill){
+        floodFill(c, floodfill_x, floodfill_y, 0xFF75E6DA); 
+    }
+
+    document.getElementById('integral_answer').innerHTML = integral;
+       
+       
     
     /*
     if(f1_below){
@@ -435,12 +516,14 @@ function give_mouse_coord(e, x, canvas, c) {
     }
     */
     
+    
+    
+    
     var str = "Your current coordinate: (" + pos_x + ", "  + pos_y + ").";
     document.getElementById('coordinate_text').innerHTML = str;
 
     
 }
-//floodFill(c, 50, 50, 0xFF0000FF);
 
 function getPixel(pixelData, x, y) {
   if (x < 0 || y < 0 || x >= pixelData.width || y >= pixelData.height) {
@@ -522,7 +605,7 @@ function wait(delay = 0) {
 }
 
 
-window.addEventListener('click', e => give_mouse_coord(e, scale_index, canvas, c), false);
+window.addEventListener('click', e => on_click(e, scale_index, canvas, c), false);
 
 
 function coord_below(x_pos, y_pos, f){
@@ -544,6 +627,13 @@ function coord_below(x_pos, y_pos, f){
 }
 
 
+
+function above_x_axis(y_pos){ 
+    if(y_pos > 0){
+        return true
+    }
+    return false
+}
 
 
 //when there is only 1 function and it is bounded by x-axis
