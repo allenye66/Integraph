@@ -55,9 +55,14 @@ h1 {
 
 #coordinate_text {
     
-    position:absolute;
-    width = 100px;
-    right:330px;
-    top: 460px;
+    display:inline-block;
 
+}
+
+#output_area{
+    
+    width: 400px;
+    position:absolute; 
+    left:1100px; top:460px;
+    /*border:1px solid black; */
 }
