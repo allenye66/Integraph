@@ -22,7 +22,7 @@ var NUMBER_BOLDED_LINES_PER_GRID_LINES = 5;
 var NUMBER_BOLDED_LINES = NUMBER_GRID_LINES/NUMBER_BOLDED_LINES_PER_GRID_LINES;
 
 function main(){    
-    
+    c.lineWidth = 1; //line width is 1 pixel
     
     graph_functions(canvas, c, give_scale_value(scale_index));
     draw_background(canvas, c, give_scale_value(scale_index));
@@ -103,7 +103,7 @@ function draw_x_axis(canvas, c, factor){
     c.moveTo(0, canvas.height/2)
     c.lineTo(canvas.width, canvas.height/2);
     
-    c.lineWidth = 3; 
+    //c.lineWidth = 3; 
     c.stroke();
     c.beginPath();
     
@@ -133,7 +133,7 @@ function draw_y_axis(canvas, c, factor){
     
     c.moveTo(canvas.width/2, 0);
     c.lineTo(canvas.width/2, canvas.height);
-    c.lineWidth = 3; 
+    //c.lineWidth = 3; 
     c.stroke();
     
     
@@ -159,11 +159,11 @@ function draw_y_axis(canvas, c, factor){
 
 
 function draw_background(canvas, c, scale){
-    c.strokeStyle = "#f0f0f0"
-    draw_grid(canvas, c);
+    //c.strokeStyle = "#f0f0f0"
+    //draw_grid(canvas, c);
     
-    c.strokeStyle = "#c0c0c0"
-    draw_bold(canvas, c);
+    //c.strokeStyle = "#c0c0c0"
+    //draw_bold(canvas, c);
     
     c.strokeStyle = "black"
     c.font = "12px Courier New";
@@ -181,7 +181,7 @@ function drawCurve(canvas, c, function_tree, function_scope, scale, color) {
     var n, xMax, xMin, yMax, yMin, xPixel, yPixel, mathX, mathY, percentX, percentY;
     
     //number of points
-    n = 1000
+    n = 50000
     
     
     xMax = 10,
@@ -237,7 +237,7 @@ function drawCurve(canvas, c, function_tree, function_scope, scale, color) {
 
     }
     c.strokeStyle = color
-    c.lineWidth = 3;
+    //c.lineWidth = 3;
     c.stroke();
   
 }
@@ -493,10 +493,11 @@ function on_click(e, x, canvas, c) {
         
         
     }
-       
+    
+    
        
     if(should_floodfill){
-        floodFill(c, floodfill_x, floodfill_y, 0xFF75E6DA); 
+        floodFill(c, floodfill_x, floodfill_y, 0xFFC0CBFF, 0);  //hex value color + FF
     }
 
     document.getElementById('integral_answer').innerHTML = integral;
@@ -537,7 +538,8 @@ function highest(){
     return b - a; 
   }); 
 }
-async function floodFill(ctx, x, y, fillColor) {
+async function floodFill(ctx, x, y, fillColor, area) {
+    
   // read the pixels in the canvas
     
     
@@ -554,9 +556,9 @@ async function floodFill(ctx, x, y, fillColor) {
   
   // get the color we're filling
     
-    //cant put: 4285916890
+    //cant put: the uint32 of the hex value of the fill
     
-    const targetColors = [0, 4293914607, 4290888129, 4277268977, 4294046193, 4290822336, 4277137391, 4290953922, 4274045120, 4274374085, 4277203184, 4274176706, 4275624152, 4275624152, 4275492595, 4274242499, 4278190080, 4291085508, 4274439878, 4271150291, 4274242546,  4270887159, 4276282098, 4275689969, 4274966257, 4275163633, 4275426801, 4293914607, 4289967091, 4277334770, 4274768843, 4291282887, 4260557554,4260360175, 4227003122, 4291677645, 4290756543, 4276349667, 4226805743, 4225358297, 4025610737, 4286019575, 4225160918, 4288190710, 4279440382, 4279900925, 4290296053, 4274834636, 4025479151, 2146562545, 2163208175];
+    const targetColors = [0, 4293914607, 4290888129, 4277268977, 4294046193, 4290822336, 4277137391, 4290953922, 4274045120, 4274374085, 4277203184, 4274176706, 4275624152, 4275624152, 4275492595, 4274242499, 4278190080, 4291085508, 4274439878, 4271150291, 4274242546,  4270887159, 4276282098, 4275689969, 4274966257, 4275163633, 4275426801, 4293914607, 4289967091, 4277334770, 4274768843, 4291282887, 4260557554,4260360175, 4227003122, 4291677645, 4290756543, 4276349667, 4226805743, 4225358297, 4025610737, 4286019575, 4225160918, 4288190710, 4279440382, 4279900925, 4290296053, 4274834636, 4025479151, 2146562545, 2163208175, 4285916890];
     
     //for(var i = 1; i < 999; i +=1){
     //    console.log(i, getPixel(pixelData, 400, 550));
@@ -568,7 +570,7 @@ async function floodFill(ctx, x, y, fillColor) {
     const bad_colors = new Set()
   if (!targetColors.includes(fillColor)  ) {
   
-    const ticksPerUpdate = 100;
+    const ticksPerUpdate = 50;
     let tickCount = 0;
     const pixelsToCheck = [x, y];
     while (pixelsToCheck.length > 0) {
@@ -577,6 +579,7 @@ async function floodFill(ctx, x, y, fillColor) {
       
       const currentColor = getPixel(pixelData, x, y);
       if (targetColors.includes(currentColor)) {
+          area += 1
         pixelData.data[y * pixelData.width + x] = fillColor;
         
         // put the data back
@@ -592,11 +595,16 @@ async function floodFill(ctx, x, y, fillColor) {
         pixelsToCheck.push(x, y - 1);
       }else{
           //console.log("bad", currentColor)
-          //bad_colors.add( currentColor)
+          bad_colors.add( currentColor)
       }
     }    
   }
     //console.log("the bad colors:", highest(bad_colors));
+    //var myArr = Array.from(bad_colors);
+    //console.log(myArr.length)
+    console.log(area/100)
+    //return area
+    
 }
 function wait(delay = 0) {
   return new Promise((resolve) => {
