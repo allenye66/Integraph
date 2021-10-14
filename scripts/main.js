@@ -22,7 +22,7 @@ var NUMBER_BOLDED_LINES_PER_GRID_LINES = 5;
 var NUMBER_BOLDED_LINES = NUMBER_GRID_LINES/NUMBER_BOLDED_LINES_PER_GRID_LINES;
 
 function main(){    
-    c.lineWidth = 1; //line width is 1 pixel
+    c.lineWidth = 2; //line width is 1 pixel
     
     graph_functions(canvas, c, give_scale_value(scale_index));
     draw_background(canvas, c, give_scale_value(scale_index));
@@ -359,6 +359,10 @@ function getMousePos(canvas, evt) {
     };
 }
 
+
+
+
+
 /*
 var x_max = 5
 var x_min = -5
@@ -419,11 +423,31 @@ function on_click(e, x, canvas, c) {
     var expr2 = document.getElementById('function2').value;
     var f1_below;
     var f2_below;
+    var below_x_axis;
+    var function_1_top;
+    var between_two_functions = false;
     
     //is the coordinate below the graph?
     f1_below = coord_below(toFixedIfNecessary(pos_x, 3), toFixedIfNecessary(pos_y, 3), expr1)
     f2_below = coord_below(toFixedIfNecessary(pos_x, 3), toFixedIfNecessary(pos_y, 3), expr2)
     
+    if(f1_below && !f2_below){
+        between_two_functions = true
+    }else if(!f1_below && f2_below){
+        between_two_functions = true
+    }
+    
+    if(function_on_top(pos_x, expr1, expr2) == 1){
+        function_1_top = true
+    }else{
+        function_2_top = false
+    }
+        
+    if(pos_y > 0){
+        below_x_axis = false
+    }else{
+        below_x_axis = true
+    }
     
     //for when theres no point floodfilling and wasting time
     var should_floodfill = false;
@@ -439,19 +463,16 @@ function on_click(e, x, canvas, c) {
     else if(expr1.length != 0 && expr2.length == 0){
         
         
-        //if the integral is above the x axis and above the graph
-        if(!f1_below && above_x_axis(pos_y)){
-            integral = "The integral is infinite, coordinate above the graph and x-axis."
-        }
-        //if the integral is below the x axis and below the graph
-        else if(f1_below && !above_x_axis(pos_y)){
-            integral = "The integral is infinite, coordinate below the graph and x-axis."
-        
-        }
+        if(contains_trig(expr1)){
+            should_floodfill = true;
+            
+        } 
 
         
+        
         else{
-            should_floodfill = true;
+            integral = "The integral is infinite, please click a position where the area is bounded."
+            should_floodfill = false;
         }
         
         
@@ -459,37 +480,75 @@ function on_click(e, x, canvas, c) {
     
     //only function 2
     else if(expr1.length == 0 && expr2.length != 0){
-        if(!f2_below && above_x_axis(pos_y)){
-            integral = "The integral is infinite, coordinate above the graph."
-        }
-        else if(f2_below && !above_x_axis(pos_y)){
-            integral = "The integral is infinite, coordinate below the graph and x-axis."
+        if(contains_trig(expr2)){
+            should_floodfill = true;
+            
+        } 
         
-        }
         else{
-            should_floodfill = true;}
+            integral = "The integral is infinite, please click a position where the area is bounded."
+            should_floodfill = false;
+            }
         }
+    
+    
     //two functions 
+    
     else{
         
-        //between two functions above 
         
-        if( (f2_below && !f1_below) || (!f2_below && f1_below)){
-            integral = "has integral between two functions"
-            should_floodfill = true;
+        
+        //coord above function 1 and below function 2
+        
+        
+        
+        if(!below_x_axis && between_two_functions){
+            console.log("ABOVE X AXIS")
+            
+
+            if(!function_1_top){
+                console.log("F2 TOP")
+               if(get_max_power(expr2) < get_max_power(expr1)){
+                    should_floodfill = true
+                } 
+            }
+            else{
+                if(get_max_power(expr1) < get_max_power(expr2)){
+                    should_floodfill = true
+                }
+            }
+            
+        }else if(below_x_axis && between_two_functions){
+            console.log("BELOW X AXIS")
+            
+            if(!function_1_top){
+               if(get_max_power(expr2) > get_max_power(expr1)){
+                    should_floodfill = true
+                } 
+            }
+            else{
+                if(get_max_power(expr1) > get_max_power(expr2)){
+                    should_floodfill = true
+                }
+            }
+            
+            
+        }else{
+            
+            if((!f2_below && !f1_below)  && !below_x_axis){
+            integral = "The integral is infinite, the coordinate is above both functions."
+            }
+
+            else if( f2_below && f1_below && below_x_axis){
+                integral = "The integral is infinite, the coordinate is below both functions."
+            }else{
+                integral = "The integral is infinite, please click a position where the area is bounded."
+            }
+        
+        
+
         }
         
-        else if((!f2_below || !f1_below)  && above_x_axis(pos_y)){
-            integral = "The integral is infinite, the coordinate is above a function."
-        }
-        
-        else if( (f2_below || f1_below) && !above_x_axis(pos_y)){
-            integral = "The integral is infinite, the coordinate is below a function."
-        }
-        
-        else{
-            should_floodfill = true;
-        }
         
         
     }
@@ -500,7 +559,7 @@ function on_click(e, x, canvas, c) {
         floodFill2(c, floodfill_x, floodfill_y, 0xFFC0CBFF, 0);  //hex value color + FF
     }
        
-    
+    document.getElementById('integral_answer').innerHTML = integral;
     /*
     if(f1_below){
         console.log("the point is below function 1")
@@ -629,8 +688,8 @@ function floodFill2(ctx, x, y, fillColor, area) {
     // put the data back
        
        
-       var str = "Your integral is: ~" + area;
-        document.getElementById('integral_answer').innerHTML = "?";
+    //   var str = "Your integral is: ~" + area;
+    //    document.getElementById('integral_answer').innerHTML = "?";
        
 
     ctx.putImageData(imageData, 0, 0);
@@ -738,16 +797,39 @@ function coord_below(x_pos, y_pos, f){
     
 
 }
+function get_max_power(s){
+    if(!s.includes("x")){
+        return 0
+    }
+    if(!s.includes("^")){
+        return 1
+    }
+    s = s.trim()
+    var power = s.indexOf("^")
+    return parseInt(s.charAt(power + 1));
+}
 
 
+function get_f_y(x_pos, f){
+    scope = {x:x_pos};
+    return toFixedIfNecessary(math.eval(f, scope), 3)
+}
 
-function above_x_axis(y_pos){ 
-    if(y_pos > 0){
+function function_on_top(x_pos, f1, f2){
+    
+    if(get_f_y(x_pos, f1) > get_f_y(x_pos, f2)){
+        return 1
+    }
+    return 2
+
+}
+
+function contains_trig(s){
+    if(s.includes("sin") || s.includes("cos")){
         return true
     }
     return false
 }
-
 
 //when there is only 1 function and it is bounded by x-axis
 
