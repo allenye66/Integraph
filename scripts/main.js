@@ -463,10 +463,12 @@ function on_click(e, x, canvas, c) {
     else if(expr1.length != 0 && expr2.length == 0){
         
         
-        if(contains_trig(expr1)){
+        if(!below_x_axis && contains_trig(expr1) && f1_below){
             should_floodfill = true;
             
-        } 
+        }else if(below_x_axis && contains_trig(expr1) && !f1_below){
+             should_floodfill = true;
+        }
 
         
         
@@ -480,10 +482,13 @@ function on_click(e, x, canvas, c) {
     
     //only function 2
     else if(expr1.length == 0 && expr2.length != 0){
-        if(contains_trig(expr2)){
+        if(!below_x_axis && contains_trig(expr2) && f2_below){
             should_floodfill = true;
             
-        } 
+        }else if(below_x_axis && contains_trig(expr2) && !f2_below){
+             should_floodfill = true;
+        }
+
         
         else{
             integral = "The integral is infinite, please click a position where the area is bounded."
@@ -498,9 +503,8 @@ function on_click(e, x, canvas, c) {
         
         
         
-        //coord above function 1 and below function 2
         
-        
+        //not trig functions
         
         if(!below_x_axis && between_two_functions){
             console.log("ABOVE X AXIS")
@@ -547,6 +551,29 @@ function on_click(e, x, canvas, c) {
         
         
 
+        }
+        
+        if(contains_trig(expr1)){
+            
+            
+            if(!below_x_axis && f1_below){
+                should_floodfill = true;
+            
+            }else if(below_x_axis  && !f1_below){
+                 should_floodfill = true;
+            }
+            
+        }
+        
+        if(contains_trig(expr2)){
+            
+            if(!below_x_axis && f2_below){
+            should_floodfill = true;
+            
+            }else if(below_x_axis  && !f2_below){
+                 should_floodfill = true;
+            }
+            
         }
         
         
@@ -798,6 +825,9 @@ function coord_below(x_pos, y_pos, f){
 
 }
 function get_max_power(s){
+    if(s.includes("sin") || s.includes("cos") || s.includes("tan")){ // only for areas between trig functions
+        return -1
+    }
     if(!s.includes("x")){
         return 0
     }
@@ -825,7 +855,7 @@ function function_on_top(x_pos, f1, f2){
 }
 
 function contains_trig(s){
-    if(s.includes("sin") || s.includes("cos")){
+    if(s.includes("sin") || s.includes("cos") || s.includes("tan")){
         return true
     }
     return false
