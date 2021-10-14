@@ -497,7 +497,7 @@ function on_click(e, x, canvas, c) {
     
        
     if(should_floodfill){
-        floodFill(c, floodfill_x, floodfill_y, 0xFFC0CBFF, 0);  //hex value color + FF
+        floodFill2(c, floodfill_x, floodfill_y, 0xFFC0CBFF, 0);  //hex value color + FF
     }
 
     document.getElementById('integral_answer').innerHTML = integral;
@@ -538,6 +538,103 @@ function highest(){
     return b - a; 
   }); 
 }
+
+function floodFill2(ctx, x, y, fillColor) {
+  // read the pixels in the canvas
+  const imageData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+  // make a Uint32Array view on the pixels so we can manipulate pixels
+  // one 32bit value at a time instead of as 4 bytes per pixel
+  const pixelData = {
+    width: imageData.width,
+    height: imageData.height,
+    data: new Uint32Array(imageData.data.buffer),
+  };
+
+  // get the color we're filling
+    const targetColors = [0];
+  
+  // check we are actually filling a different color
+   if (!targetColors.includes(fillColor)  ) {
+    const spansToCheck = [];
+    
+    function addSpan(left, right, y, direction) {
+      spansToCheck.push({left, right, y, direction});
+    }
+    
+    function checkSpan(left, right, y, direction) {
+      let inSpan = false;
+      let staxrt;
+      let x;
+      for (x = left; x < right; ++x) {
+        const color = getPixel(pixelData, x, y);
+        if (targetColors.includes(color)) {
+          if (!inSpan) {
+            inSpan = true;
+            start = x;
+          }
+        } else {
+          if (inSpan) {
+            inSpan = false;
+            addSpan(start, x - 1, y, direction);
+          }
+        }
+      }
+      if (inSpan) {
+        inSpan = false;
+        addSpan(start, x - 1, y, direction);
+      }
+    }
+    
+    addSpan(x, x, y, 0);
+    
+    while (spansToCheck.length > 0) {
+      const {left, right, y, direction} = spansToCheck.pop();
+      
+      // do left until we hit something, while we do this check above and below and add
+      let l = left;
+      for (;;) {
+        --l;
+        const color = getPixel(pixelData, l, y);
+        if (!targetColors.includes(color)) {
+          break;
+        }
+      }
+      ++l
+      
+      let r = right;
+      for (;;) {
+        ++r;
+        const color = getPixel(pixelData, r, y);
+        if (!targetColors.includes(color)) {
+          break;
+        }
+      }
+
+      const lineOffset = y * pixelData.width;
+      pixelData.data.fill(fillColor, lineOffset + l, lineOffset + r);
+      
+      if (direction <= 0) {
+        checkSpan(l, r, y - 1, -1);
+      } else {
+        checkSpan(l, left, y - 1, -1);
+        checkSpan(right, r, y - 1, -1);
+      }
+      
+      if (direction >= 0) {
+        checkSpan(l, r, y + 1, +1);
+      } else {
+        checkSpan(l, left, y + 1, +1);
+        checkSpan(right, r, y + 1, +1);
+      }     
+    }
+    // put the data back
+    ctx.putImageData(imageData, 0, 0);
+  }
+}
+
+
+/*
 async function floodFill(ctx, x, y, fillColor, area) {
     
   // read the pixels in the canvas
@@ -545,6 +642,7 @@ async function floodFill(ctx, x, y, fillColor, area) {
     
     
   const imageData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
+    console.log(getPixel())
   
   // make a Uint32Array view on the pixels so we can manipulate pixels
   // one 32bit value at a time instead of as 4 bytes per pixel
@@ -611,6 +709,9 @@ function wait(delay = 0) {
     setTimeout(resolve, delay);
   });
 }
+
+*/
+
 
 
 window.addEventListener('click', e => on_click(e, scale_index, canvas, c), false);
