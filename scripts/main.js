@@ -181,7 +181,7 @@ function drawCurve(canvas, c, function_tree, function_scope, scale, color) {
     var n, xMax, xMin, yMax, yMin, xPixel, yPixel, mathX, mathY, percentX, percentY;
     
     //number of points
-    n = 50000
+    n = 10000
     
     
     xMax = 10,
@@ -499,9 +499,6 @@ function on_click(e, x, canvas, c) {
     if(should_floodfill){
         floodFill2(c, floodfill_x, floodfill_y, 0xFFC0CBFF, 0);  //hex value color + FF
     }
-
-    document.getElementById('integral_answer').innerHTML = integral;
-       
        
     
     /*
@@ -539,7 +536,7 @@ function highest(){
   }); 
 }
 
-function floodFill2(ctx, x, y, fillColor) {
+function floodFill2(ctx, x, y, fillColor, area) {
   // read the pixels in the canvas
   const imageData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
 
@@ -569,6 +566,7 @@ function floodFill2(ctx, x, y, fillColor) {
       for (x = left; x < right; ++x) {
         const color = getPixel(pixelData, x, y);
         if (targetColors.includes(color)) {
+            area += give_scale_value(scale_index)
           if (!inSpan) {
             inSpan = true;
             start = x;
@@ -629,6 +627,12 @@ function floodFill2(ctx, x, y, fillColor) {
       }     
     }
     // put the data back
+       
+       
+       var str = "Your integral is: ~" + area;
+        document.getElementById('integral_answer').innerHTML = "?";
+       
+
     ctx.putImageData(imageData, 0, 0);
   }
 }
