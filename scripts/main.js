@@ -25,8 +25,7 @@ function main(){
     c.lineWidth = 2; //line width is 1 pixel
     
     graph_functions(canvas, c, give_scale_value(scale_index));
-    draw_background(canvas, c, give_scale_value(scale_index));
-    
+    draw_background(canvas, c, give_scale_value(scale_index));  
 
 }
 
@@ -47,9 +46,6 @@ document.getElementById("plus").addEventListener("click", function() {
             draw_background(canvas, c, give_scale_value(scale_index));
             graph_function_after_zoom(canvas, c, give_scale_value(scale_index) );
 }, false);
-
-
- 
 
 
 function draw_grid(canvas, c){
@@ -157,7 +153,6 @@ function draw_y_axis(canvas, c, factor){
     
 }
 
-
 function draw_background(canvas, c, scale){
     //c.strokeStyle = "#f0f0f0"
     //draw_grid(canvas, c);
@@ -171,9 +166,7 @@ function draw_background(canvas, c, scale){
     draw_x_axis(canvas, c, scale);
     draw_y_axis(canvas, c, scale);
 
-    
 }
-
 
 function drawCurve(canvas, c, function_tree, function_scope, scale, color) {
     
@@ -188,12 +181,9 @@ function drawCurve(canvas, c, function_tree, function_scope, scale, color) {
     xMin = -10,
     yMax = 10,
     yMin = -10;
-
-    
     
     var starting_scale_reciprocal = 0.5;
     
-
     
     xMax = xMax * scale * starting_scale_reciprocal; 
     xMin = xMin * scale * starting_scale_reciprocal;
@@ -251,8 +241,7 @@ function graph_functions(canvas, c, scale_factor){
     scope = {x:0};
     var expr1 = '';
     var expr2 = '';
-    
-    
+     
     
     var input1 = $('#function1');
     input1.val(expr1);
@@ -314,7 +303,6 @@ function graph_functions(canvas, c, scale_factor){
     
 }
 
-
 function graph_function_after_zoom(canvas, c, scale_factor){
     math = mathjs();
     scope = {x:0};
@@ -329,10 +317,7 @@ function graph_function_after_zoom(canvas, c, scale_factor){
     var input2 = $('#function2');
     input2.val(expr2);
     
-        
-        
-        
-        
+  
     expr1 = input1.val();
     expr2 = input2.val();
     try{
@@ -358,9 +343,6 @@ function getMousePos(canvas, evt) {
         y: (evt.clientY - rect.top) / (rect.bottom - rect.top) * canvas.height
     };
 }
-
-
-
 
 
 /*
@@ -459,33 +441,34 @@ function on_click(e, x, canvas, c) {
         integral = "To calculate an integral, please enter a function."
     }
     
+    
+    
+    
     //only function 1
     else if(expr1.length != 0 && expr2.length == 0){
         
         
-        if(!below_x_axis && contains_trig(expr1) && f1_below){
+        if(!below_x_axis &&  (expr1.includes("sin") || expr1.includes("cos")) && f1_below){
             should_floodfill = true;
+           
             
-        }else if(below_x_axis && contains_trig(expr1) && !f1_below){
+        }else if(below_x_axis && (expr1.includes("sin") || expr1.includes("cos")) && !f1_below){
              should_floodfill = true;
         }
-
-        
         
         else{
             integral = "The integral is infinite, please click a position where the area is bounded."
             should_floodfill = false;
         }
         
-        
     }
     
     //only function 2
     else if(expr1.length == 0 && expr2.length != 0){
-        if(!below_x_axis && contains_trig(expr2) && f2_below){
+        if(!below_x_axis && (expr2.includes("sin") || expr2.includes("cos")) && f2_below){
             should_floodfill = true;
             
-        }else if(below_x_axis && contains_trig(expr2) && !f2_below){
+        }else if(below_x_axis && (expr2.includes("sin") || expr2.includes("cos")) && !f2_below){
              should_floodfill = true;
         }
 
@@ -495,17 +478,11 @@ function on_click(e, x, canvas, c) {
             should_floodfill = false;
             }
         }
-    
-    
+
     //two functions 
-    
     else{
         
-        
-        
-        
-        //not trig functions
-        
+        //works for non trig
         if(!below_x_axis && between_two_functions){
             console.log("ABOVE X AXIS")
             
@@ -514,11 +491,20 @@ function on_click(e, x, canvas, c) {
                 console.log("F2 TOP")
                if(get_max_power(expr2) < get_max_power(expr1)){
                     should_floodfill = true
-                } 
+                }
+                else{
+                    integral = "The integral is infinite, please click a position where the area is bounded."
+                    should_floodfill = false;
+                }
+                
             }
             else{
                 if(get_max_power(expr1) < get_max_power(expr2)){
                     should_floodfill = true
+                }
+                else{
+                    integral = "The integral is infinite, please click a position where the area is bounded."
+                    should_floodfill = false;
                 }
             }
             
@@ -529,15 +515,22 @@ function on_click(e, x, canvas, c) {
                if(get_max_power(expr2) > get_max_power(expr1)){
                     should_floodfill = true
                 } 
+                else{
+                    integral = "The integral is infinite, please click a position where the area is bounded."
+                    should_floodfill = false;
+                }
             }
             else{
                 if(get_max_power(expr1) > get_max_power(expr2)){
                     should_floodfill = true
                 }
+                else{
+                    integral = "The integral is infinite, please click a position where the area is bounded."
+                    should_floodfill = false;
+                }
             }
             
-            
-        }else{
+        } else{
             
             if((!f2_below && !f1_below)  && !below_x_axis){
             integral = "The integral is infinite, the coordinate is above both functions."
@@ -548,8 +541,7 @@ function on_click(e, x, canvas, c) {
             }else{
                 integral = "The integral is infinite, please click a position where the area is bounded."
             }
-        
-        
+            
 
         }
         
@@ -575,13 +567,9 @@ function on_click(e, x, canvas, c) {
             }
             
         }
-        
-        
-        
+  
     }
-    
-    
-       
+
     if(should_floodfill){
         floodFill2(c, floodfill_x, floodfill_y, 0xFFC0CBFF, 0);  //hex value color + FF
     }
@@ -599,10 +587,7 @@ function on_click(e, x, canvas, c) {
         console.log("the point is above function 2")
     }
     */
-    
-    
-    
-    
+
     var str = "Your current coordinate: (" + pos_x + ", "  + pos_y + ").";
     document.getElementById('coordinate_text').innerHTML = str;
 
@@ -859,6 +844,11 @@ function contains_trig(s){
         return true
     }
     return false
+}
+
+
+function get_bounds(f1, f2){
+    
 }
 
 //when there is only 1 function and it is bounded by x-axis
