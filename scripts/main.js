@@ -468,12 +468,12 @@ function on_click(e, x, canvas, c) {
         }
 
         
-        
+        /*
         else{
             integral = "The integral is infinite, please click a position where the area is bounded."
             should_floodfill = false;
         }
-        
+        */
         
     }
     
@@ -486,12 +486,12 @@ function on_click(e, x, canvas, c) {
              should_floodfill = true;
         }
 
-        
+        /*
         else{
             integral = "The integral is infinite, please click a position where the area is bounded."
             should_floodfill = false;
             }
-        }
+        }*/
     
     
     //two functions 
@@ -513,11 +513,12 @@ function on_click(e, x, canvas, c) {
                     should_floodfill = true
                 } 
             }
+            /*
             else{
                 if(get_max_power(expr1) < get_max_power(expr2)){
                     should_floodfill = true
                 }
-            }
+            }*/
             
         }else if(below_x_axis && between_two_functions){
             console.log("BELOW X AXIS")
@@ -527,11 +528,13 @@ function on_click(e, x, canvas, c) {
                     should_floodfill = true
                 } 
             }
+            /*
             else{
                 if(get_max_power(expr1) > get_max_power(expr2)){
                     should_floodfill = true
                 }
             }
+            */
             
             
         }else{
@@ -542,7 +545,9 @@ function on_click(e, x, canvas, c) {
 
             else if( f2_below && f1_below && below_x_axis){
                 integral = "The integral is infinite, the coordinate is below both functions."
-            }else{
+            }
+            
+            else{
                 integral = "The integral is infinite, please click a position where the area is bounded."
             }
         
