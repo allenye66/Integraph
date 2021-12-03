@@ -1,6 +1,5 @@
 
 var canvas = document.getElementById("myCanvas"), c = canvas.getContext('2d');
-
 var scale_index = 0
 
 function give_scale_value(number){
@@ -8,10 +7,8 @@ function give_scale_value(number){
     var scale_constant_neg = [5,2,1]
     var zeros = Math.floor(number/3);
     if(number >= 0){
-        
         return scale_constant_pos[(number)%3]* Math.pow(10, zeros) 
     }else{
-        
         return scale_constant_neg[(-number-1)%3] / Math.pow(10, zeros*-1) 
     }
     
@@ -866,3 +863,25 @@ function contains_trig(s){
 
 //when there is two functions 
 //have to calculate intersection points and see if 0 is within them since x-axis is automatic bound
+
+
+
+console.log(intersect("x^2 + 2*x - 1", "3"))
+console.log(intersect("x^3", "x"))
+//intersect("sin(x)", "0")
+function intersect(f1, f2){
+    var x = nerdamer.solve(f1+"="+f2, "x");
+    x = String(x)
+    x = x.substr(1, x.length-2)
+    var a = x.split(",")
+    const iterator = a.values();
+
+    for(var i = 0; i < a.length; i ++){
+        if(a[i].includes("/")){
+            a[i] = parseInt(a[i].substr(0, a[i].indexOf("/")))/parseInt(a[i].substr(a[i].indexOf("/") + 1))
+        }else{
+            a[i] = parseInt(a[i])
+        }
+    }
+    return a
+}
