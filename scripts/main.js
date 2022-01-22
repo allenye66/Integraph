@@ -2,6 +2,7 @@
 var canvas = document.getElementById("myCanvas"), c = canvas.getContext('2d');
 var scale_index = 0
 c.font = "12px Courier New";
+
 function give_scale_value(number){
     var scale_constant_pos = [1,2,5]
     var scale_constant_neg = [5,2,1]
@@ -96,8 +97,8 @@ function toFixedIfNecessary( value, dp ){
 }
 
 
-function draw_x_axis(canvas, c, factor, clr){
-    c.strokeStyle = clr;
+function draw_x_axis(canvas, c, factor){
+    c.strokeStyle = "black";
     c.moveTo(0, canvas.height/2)
     c.lineTo(canvas.width, canvas.height/2);
     
@@ -127,8 +128,8 @@ function draw_x_axis(canvas, c, factor, clr){
  
 }
 
-function draw_y_axis(canvas, c, factor, clr){
-    c.strokeStyle = clr;
+function draw_y_axis(canvas, c, factor){
+    c.strokeStyle = "black";
     c.moveTo(canvas.width/2, 0);
     c.lineTo(canvas.width/2, canvas.height);
     //c.lineWidth = 3; 
@@ -156,8 +157,8 @@ function draw_y_axis(canvas, c, factor, clr){
 }
 
 function draw_background(canvas, c, scale){
-    draw_x_axis(canvas, c, scale, "black");
-    draw_y_axis(canvas, c, scale, "black");
+    draw_x_axis(canvas, c, scale);
+    draw_y_axis(canvas, c, scale);
     
 }
 
@@ -225,7 +226,7 @@ function drawCurve(canvas, c, function_tree, function_scope, scale, color) {
         c.lineTo(xPixel , yPixel);
 
     }
-
+    c.strokeStyle = color
     
     
     c.stroke();
@@ -268,13 +269,12 @@ function graph_functions(canvas, c, scale_factor){
             }
 
             try{
-                document.getElementById('testing').innerHTML = c.strokeStyle;
-                c.strokeStyle = "blue"
+                
+                
                 drawCurve(canvas, c, tree1, scope, scale_factor, "red");  
-                c.strokeStyle = "red"
-                drawCurve(canvas, c, tree2, scope, scale_factor, "green");  
-                c.strokeStyle = "black"
+                drawCurve(canvas, c, tree2, scope, scale_factor, "green"); 
                 draw_background(canvas, c, scale_factor);
+                drawCurve(canvas, c, tree2, scope, scale_factor, "green");  
                 
                 
             }catch(e){
@@ -299,12 +299,10 @@ function graph_functions(canvas, c, scale_factor){
 
             try{
                 
-                c.strokeStyle = "blue"
                 drawCurve(canvas, c, tree1, scope, scale_factor, "red");  
-                c.strokeStyle = "red"
                 drawCurve(canvas, c, tree2, scope, scale_factor, "green");  
-                c.strokeStyle = "black"
                 draw_background(canvas, c, scale_factor);
+                drawCurve(canvas, c, tree2, scope, scale_factor, "green");  
                  
                 
             }catch(e){
