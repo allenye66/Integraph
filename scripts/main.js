@@ -1,7 +1,7 @@
 
 var canvas = document.getElementById("myCanvas"), c = canvas.getContext('2d');
 var scale_index = 0
-
+c.font = "12px Courier New";
 function give_scale_value(number){
     var scale_constant_pos = [1,2,5]
     var scale_constant_neg = [5,2,1]
@@ -95,8 +95,9 @@ function toFixedIfNecessary( value, dp ){
   return +parseFloat(value).toFixed( dp );
 }
 
-function draw_x_axis(canvas, c, factor){
-    
+
+function draw_x_axis(canvas, c, factor, clr){
+    c.strokeStyle = clr;
     c.moveTo(0, canvas.height/2)
     c.lineTo(canvas.width, canvas.height/2);
     
@@ -126,8 +127,8 @@ function draw_x_axis(canvas, c, factor){
  
 }
 
-function draw_y_axis(canvas, c, factor){
-    
+function draw_y_axis(canvas, c, factor, clr){
+    c.strokeStyle = clr;
     c.moveTo(canvas.width/2, 0);
     c.lineTo(canvas.width/2, canvas.height);
     //c.lineWidth = 3; 
@@ -154,25 +155,16 @@ function draw_y_axis(canvas, c, factor){
     
 }
 
-
 function draw_background(canvas, c, scale){
-    //c.strokeStyle = "#f0f0f0"
-    //draw_grid(canvas, c);
-    
-    //c.strokeStyle = "#c0c0c0"
-    //draw_bold(canvas, c);
-    
-    c.strokeStyle = "black"
-    c.font = "12px Courier New";
-
-    draw_x_axis(canvas, c, scale);
-    draw_y_axis(canvas, c, scale);
-
+    draw_x_axis(canvas, c, scale, "black");
+    draw_y_axis(canvas, c, scale, "black");
     
 }
 
 
+
 function drawCurve(canvas, c, function_tree, function_scope, scale, color) {
+    
     
     
     var n, xMax, xMin, yMax, yMin, xPixel, yPixel, mathX, mathY, percentX, percentY;
@@ -233,8 +225,9 @@ function drawCurve(canvas, c, function_tree, function_scope, scale, color) {
         c.lineTo(xPixel , yPixel);
 
     }
-    c.strokeStyle = color
-    //c.lineWidth = 3;
+
+    
+    
     c.stroke();
   
 }
@@ -261,7 +254,7 @@ function graph_functions(canvas, c, scale_factor){
         
         c.clearRect(0, 0, canvas.width, canvas.height);
 
-        draw_background(canvas, c, scale_factor);
+        //draw_background(canvas, c, scale_factor);
         
         
         expr1 = input1.val();
@@ -275,18 +268,24 @@ function graph_functions(canvas, c, scale_factor){
             }
 
             try{
+                document.getElementById('testing').innerHTML = c.strokeStyle;
+                c.strokeStyle = "blue"
                 drawCurve(canvas, c, tree1, scope, scale_factor, "red");  
+                c.strokeStyle = "red"
                 drawCurve(canvas, c, tree2, scope, scale_factor, "green");  
+                c.strokeStyle = "black"
+                draw_background(canvas, c, scale_factor);
                 
                 
             }catch(e){
                 console.log(e)
         }
     });
-    input2.keyup(function (event){
+    input2.on('input', function() {
+    
         
         c.clearRect(0, 0, canvas.width, canvas.height);
-        draw_background(canvas, c, scale_factor);
+        
         
         expr1 = input1.val();
         expr2 = input2.val();
@@ -299,9 +298,13 @@ function graph_functions(canvas, c, scale_factor){
             }
 
             try{
-                //whichever is drawn last has a gray line
+                
+                c.strokeStyle = "blue"
                 drawCurve(canvas, c, tree1, scope, scale_factor, "red");  
+                c.strokeStyle = "red"
                 drawCurve(canvas, c, tree2, scope, scale_factor, "green");  
+                c.strokeStyle = "black"
+                draw_background(canvas, c, scale_factor);
                  
                 
             }catch(e){
@@ -326,10 +329,6 @@ function graph_function_after_zoom(canvas, c, scale_factor){
     var input2 = $('#function2');
     input2.val(expr2);
     
-        
-        
-        
-        
     expr1 = input1.val();
     expr2 = input2.val();
     try{
@@ -485,6 +484,7 @@ function on_click(e, x, canvas, c) {
         }else if(below_x_axis && contains_trig(expr2) && !f2_below){
              should_floodfill = true;
         }
+    }
 
         /*
         else{
@@ -497,10 +497,7 @@ function on_click(e, x, canvas, c) {
     //two functions 
     
     else{
-        
-        
-        
-        
+
         //not trig functions
         
         if(!below_x_axis && between_two_functions){
@@ -550,14 +547,8 @@ function on_click(e, x, canvas, c) {
             else{
                 integral = "The integral is infinite, please click a position where the area is bounded."
             }
-        
-        
-
         }
-        
         if(contains_trig(expr1)){
-            
-            
             if(!below_x_axis && f1_below){
                 should_floodfill = true;
             
@@ -566,7 +557,6 @@ function on_click(e, x, canvas, c) {
             }
             
         }
-        
         if(contains_trig(expr2)){
             
             if(!below_x_axis && f2_below){
@@ -582,8 +572,6 @@ function on_click(e, x, canvas, c) {
         
     }
     
-    
-       
     if(should_floodfill){
         floodFill2(c, floodfill_x, floodfill_y, 0xFFC0CBFF, 0);  //hex value color + FF
     }
@@ -607,6 +595,8 @@ function on_click(e, x, canvas, c) {
     
     var str = "Your current coordinate: (" + pos_x + ", "  + pos_y + ").";
     document.getElementById('coordinate_text').innerHTML = str;
+    show_integral(expr1, expr2, pos_x);
+    
 
     
 }
@@ -869,6 +859,21 @@ function contains_trig(s){
 //when there is two functions 
 //have to calculate intersection points and see if 0 is within them since x-axis is automatic bound
 
+function show_integral(f1, f2, pos){
+    
+    var intersections = intersect(f1, f2).sort();
+    var left, right = 0
+    for(var i = 0; i < intersections.length-1; i ++){
+        if(pos > intersections[i]){
+            left = intersections[i]
+            right = intersections[i+1]
+        }
+    }
+    document.getElementById("intersections").innerHTML = intersections;
+    document.getElementById("integral").innerHTML = ' Integrating from: ' + left + ' to ' + right;
+}
+
+
 
 
 console.log(intersect("x^2 + 2*x - 1", "3"))
@@ -883,7 +888,7 @@ function intersect(f1, f2){
 
     for(var i = 0; i < a.length; i ++){
         if(a[i].includes("/")){
-            a[i] = parseInt(a[i].substr(0, a[i].indexOf("/")))/parseInt(a[i].substr(a[i].indexOf("/") + 1))
+            a[i] = (parseInt(a[i].substr(0, a[i].indexOf("/")))/parseInt(a[i].substr(a[i].indexOf("/") + 1))).toFixed(2);
         }else{
             a[i] = parseInt(a[i])
         }
